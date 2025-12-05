@@ -31,45 +31,56 @@ st.set_page_config(
 )
 
 # ============================================
-# 색상 팔레트 (통일된 다크 테마)
+# 색상 팔레트 (MetaDAO 레드/핑크 테마)
 # ============================================
 COLORS = {
-    # 배경
-    "bg_primary": "#020617",
-    "bg_secondary": "#0B1120",
-    "bg_card": "#0F172A",
-    "border": "#1E293B",
+    # 배경 (보라-네이비 그라데이션 느낌)
+    "bg_primary": "#0D0D1A",
+    "bg_secondary": "#12121F",
+    "bg_card": "#1A1A2E",
+    "bg_card_hover": "#252540",
+    "border": "#2D2D4A",
     
     # 텍스트
-    "text_primary": "#E5E7EB",
-    "text_secondary": "#9CA3AF",
-    "text_muted": "#6B7280",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "#A0A0B8",
+    "text_muted": "#6B6B80",
     
-    # 포인트
-    "accent_primary": "#06B6D4",
-    "accent_secondary": "#0EA5E9",
+    # 포인트 (핑크/마젠타 계열 - MetaDAO 느낌)
+    "accent_primary": "#E91E8C",      # 핫핑크
+    "accent_secondary": "#FF6B9D",    # 연한 핑크
+    "accent_gradient_start": "#E91E8C",
+    "accent_gradient_end": "#FF6B9D",
+    
+    # 보조 포인트
+    "accent_cyan": "#06B6D4",
+    "accent_purple": "#A855F7",
     "accent_warning": "#FACC15",
     
     # 상태
     "positive": "#22C55E",
     "positive_light": "#4ADE80",
-    "positive_bg": "#022C22",
+    "positive_bg": "#0D2818",
     "negative": "#EF4444",
     "negative_light": "#FCA5A5",
-    "negative_bg": "#3F1D2B",
-    "neutral_bg": "#064E3B",
+    "negative_bg": "#2D1215",
+    "neutral_bg": "#1E3A5F",
     
     # 차트용
     "chart_current_roi": "#22C55E",
-    "chart_launch_roi": "#0EA5E9",
+    "chart_launch_roi": "#E91E8C",     # 핑크
     "chart_ath_roi": "#FACC15",
-    "chart_atl_roi": "#FB7185",
-    "chart_featured": "#4ECDC4",
-    "chart_permissionless": "#FF6B6B",
+    "chart_atl_roi": "#EF4444",
+    "chart_featured": "#06B6D4",
+    "chart_permissionless": "#FF6B9D",
+    
+    # 프로그레스/강조
+    "highlight": "#E91E8C",
+    "highlight_glow": "rgba(233, 30, 140, 0.3)",
 }
 
 # 연속 색 스케일 (ROI 등)
-COLOR_SCALE_ROI = ["#F97373", "#FACC15", "#22C55E"]
+COLOR_SCALE_ROI = ["#EF4444", "#FACC15", "#22C55E"]
 
 # ============================================
 # 커스텀 CSS 주입
@@ -77,27 +88,38 @@ COLOR_SCALE_ROI = ["#F97373", "#FACC15", "#22C55E"]
 def inject_custom_css():
     st.markdown(f"""
     <style>
-    /* 전체 배경 */
+    /* 전체 배경 - 그라데이션 */
     .stApp {{
-        background-color: {COLORS["bg_primary"]};
+        background: linear-gradient(180deg, {COLORS["bg_primary"]} 0%, #1a0a1a 50%, {COLORS["bg_primary"]} 100%);
+        background-attachment: fixed;
     }}
     
     /* 사이드바 */
     [data-testid="stSidebar"] {{
-        background-color: {COLORS["bg_secondary"]};
+        background: linear-gradient(180deg, {COLORS["bg_secondary"]} 0%, #1a0a1a 100%);
         border-right: 1px solid {COLORS["border"]};
     }}
     
-    /* 메트릭 카드 */
+    /* 메트릭 카드 - 글로우 효과 */
     [data-testid="stMetricValue"] {{
         color: {COLORS["text_primary"]};
+        font-weight: 700;
     }}
     [data-testid="stMetricLabel"] {{
         color: {COLORS["text_secondary"]};
     }}
+    [data-testid="stMetricDelta"] svg {{
+        stroke: {COLORS["accent_primary"]};
+    }}
     
-    /* 헤더 */
-    h1, h2, h3 {{
+    /* 헤더 - 핑크 그라데이션 */
+    h1 {{
+        background: linear-gradient(90deg, {COLORS["accent_primary"]}, {COLORS["accent_secondary"]});
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }}
+    h2, h3 {{
         color: {COLORS["text_primary"]} !important;
     }}
     
@@ -106,70 +128,117 @@ def inject_custom_css():
         color: {COLORS["text_secondary"]} !important;
     }}
     
-    /* 탭 */
+    /* 탭 - 핑크 테마 */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 8px;
-        background-color: {COLORS["bg_secondary"]};
-        border-radius: 8px;
-        padding: 4px;
+        background-color: {COLORS["bg_card"]};
+        border-radius: 12px;
+        padding: 6px;
+        border: 1px solid {COLORS["border"]};
     }}
     .stTabs [data-baseweb="tab"] {{
         background-color: transparent;
         color: {COLORS["text_secondary"]};
-        border-radius: 6px;
+        border-radius: 8px;
+        padding: 8px 16px;
     }}
     .stTabs [aria-selected="true"] {{
-        background-color: {COLORS["bg_card"]};
-        color: {COLORS["accent_primary"]};
+        background: linear-gradient(135deg, {COLORS["accent_primary"]}40, {COLORS["accent_secondary"]}20);
+        color: {COLORS["accent_secondary"]};
+        border: 1px solid {COLORS["accent_primary"]}60;
     }}
     
-    /* 버튼 */
+    /* 버튼 - 핑크 그라데이션 */
     .stButton > button {{
-        background-color: {COLORS["accent_primary"]};
-        color: {COLORS["bg_primary"]};
+        background: linear-gradient(135deg, {COLORS["accent_primary"]}, {COLORS["accent_secondary"]});
+        color: white;
         border: none;
-        border-radius: 6px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px {COLORS["highlight_glow"]};
     }}
     .stButton > button:hover {{
-        background-color: {COLORS["accent_secondary"]};
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px {COLORS["highlight_glow"]};
     }}
     
     /* 데이터프레임 */
     .stDataFrame {{
         border: 1px solid {COLORS["border"]};
-        border-radius: 8px;
+        border-radius: 12px;
+        overflow: hidden;
     }}
     
     /* 익스팬더 */
     .streamlit-expanderHeader {{
         background-color: {COLORS["bg_card"]};
         border: 1px solid {COLORS["border"]};
-        border-radius: 8px;
+        border-radius: 10px;
     }}
     
     /* 카드 스타일 */
     .custom-card {{
-        background-color: {COLORS["bg_card"]};
+        background: linear-gradient(135deg, {COLORS["bg_card"]} 0%, {COLORS["bg_card_hover"]} 100%);
         border: 1px solid {COLORS["border"]};
-        border-radius: 8px;
-        padding: 1rem;
+        border-radius: 12px;
+        padding: 1.25rem;
         margin-bottom: 1rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }}
     
     /* 구분선 */
     hr {{
         border-color: {COLORS["border"]};
+        opacity: 0.5;
     }}
     
     /* 셀렉트박스/인풋 */
-    .stSelectbox, .stNumberInput {{
-        color: {COLORS["text_primary"]};
+    .stSelectbox > div > div {{
+        background-color: {COLORS["bg_card"]};
+        border-color: {COLORS["border"]};
     }}
     
     /* 정보 박스 */
     .stAlert {{
         background-color: {COLORS["bg_card"]};
         border: 1px solid {COLORS["border"]};
+        border-radius: 10px;
+    }}
+    
+    /* 숫자 입력 */
+    .stNumberInput > div > div > input {{
+        background-color: {COLORS["bg_card"]};
+        border-color: {COLORS["border"]};
+        color: {COLORS["text_primary"]};
+    }}
+    
+    /* 체크박스 */
+    .stCheckbox > label > span {{
+        color: {COLORS["text_primary"]};
+    }}
+    
+    /* 라디오 버튼 */
+    .stRadio > label {{
+        color: {COLORS["text_primary"]};
+    }}
+    
+    /* 메트릭 컨테이너 글로우 */
+    [data-testid="metric-container"] {{
+        background: linear-gradient(135deg, {COLORS["bg_card"]} 0%, {COLORS["bg_card_hover"]} 100%);
+        border: 1px solid {COLORS["border"]};
+        border-radius: 12px;
+        padding: 1rem;
+    }}
+    
+    /* 다운로드 버튼 */
+    .stDownloadButton > button {{
+        background: {COLORS["bg_card"]};
+        border: 1px solid {COLORS["accent_primary"]};
+        color: {COLORS["accent_primary"]};
+    }}
+    .stDownloadButton > button:hover {{
+        background: {COLORS["accent_primary"]}20;
     }}
     </style>
     """, unsafe_allow_html=True)
@@ -185,13 +254,13 @@ def apply_dark_layout(fig, height: int = 400):
     """모든 Plotly 차트에 공통 다크 레이아웃 적용"""
     fig.update_layout(
         template="plotly_dark",
-        paper_bgcolor=COLORS["bg_primary"],
-        plot_bgcolor=COLORS["bg_primary"],
+        paper_bgcolor="rgba(13,13,26,0)",
+        plot_bgcolor="rgba(26,26,46,0.5)",
         font=dict(color=COLORS["text_primary"], family="sans-serif"),
         height=height,
-        margin=dict(l=20, r=20, t=40, b=20),
+        margin=dict(l=20, r=20, t=50, b=20),
         legend=dict(
-            bgcolor="rgba(15,23,42,0.8)",
+            bgcolor="rgba(26,26,46,0.8)",
             bordercolor=COLORS["border"],
             borderwidth=1,
             font=dict(color=COLORS["text_primary"])
@@ -199,11 +268,14 @@ def apply_dark_layout(fig, height: int = 400):
         xaxis=dict(
             gridcolor=COLORS["border"],
             zerolinecolor=COLORS["border"],
+            tickfont=dict(color=COLORS["text_secondary"])
         ),
         yaxis=dict(
             gridcolor=COLORS["border"],
             zerolinecolor=COLORS["border"],
-        )
+            tickfont=dict(color=COLORS["text_secondary"])
+        ),
+        title_font=dict(color=COLORS["accent_secondary"], size=16)
     )
     return fig
 
@@ -214,11 +286,11 @@ def apply_dark_layout(fig, height: int = 400):
 def style_roi(val):
     """ROI 컬럼 스타일링 (통일된 색상)"""
     if pd.isna(val) or val is None:
-        return f"background-color: {COLORS['bg_primary']}; color: {COLORS['text_secondary']}"
+        return f"background-color: {COLORS['bg_card']}; color: {COLORS['text_muted']}"
     if val >= 2:
         return f"background-color: {COLORS['positive_bg']}; color: {COLORS['positive_light']}"
     elif val >= 1:
-        return f"background-color: {COLORS['neutral_bg']}; color: #BBF7D0"
+        return f"background-color: {COLORS['neutral_bg']}; color: #93C5FD"
     else:
         return f"background-color: {COLORS['negative_bg']}; color: {COLORS['negative_light']}"
 
