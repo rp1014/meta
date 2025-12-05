@@ -138,13 +138,21 @@ METADAO_TOKENS = {
 def fetch_jupiter_prices(token_mints: List[str]) -> Dict:
     """Jupiter Price API V2로 현재 가격 조회"""
     try:
-        ids = ",".join(token_mints)
-        url = f"https://api.jup.ag/price/v2?ids={ids}&showExtraInfo=true"
-        response = requests.get(url, timeout=15)
-        response.raise_for_status()
-        return response.json().get("data", {})
+        # 개별 토큰씩 조회 (배치 요청 시 401 오류 발생)
+        result = {}
+        for mint in token_mints[:5]:  # 처음 5개만 시도
+            try:
+                url = f"https://api.jup.ag/price/v2?ids={mint}"
+                response = requests.get(url, timeout=10)
+                if response.status_code == 200:
+                    data = response.json().get("data", {})
+                    result.update(data)
+                time.sleep(0.2)  # Rate limit 방지
+            except:
+                continue
+        return result
     except Exception as e:
-        st.warning(f"Jupiter API 오류: {e}")
+        # Jupiter API 실패 시 조용히 빈 dict 반환 (DexScreener로 대체)
         return {}
 
 @st.cache_data(ttl=120)
@@ -503,6 +511,9 @@ def render_token_cards(df: pd.DataFrame):
                 
                 # 상세 정보
                 with st.expander("상세 정보"):
+                    ath_str = f"${row['ATH']:.4f}" if pd.notna(row['ATH']) else "N/A"
+                    atl_str = f"${row['ATL']:.6f}" if pd.notna(row['ATL']) else "N/A"
+                    
                     st.markdown(f"""
                     **설명:** {row['Description']}
                     
@@ -512,8 +523,8 @@ def render_token_cards(df: pd.DataFrame):
                     | ICO 모금액 | ${row['ICO Raise (USD)']:,.0f} |
                     | 세일 토큰 | {row['Sale Tokens']:,.0f} |
                     | 세일 비율 | {row['Sale Ratio (%)']:.1f}% |
-                    | ATH | ${row['ATH']:.4f} | if pd.notna(row['ATH']) else 'N/A'
-                    | ATL | ${row['ATL']:.6f} | if pd.notna(row['ATL']) else 'N/A'
+                    | ATH | {ath_str} |
+                    | ATL | {atl_str} |
                     | 유동성 | ${row['Liquidity']:,.0f} |
                     | 24h 거래량 | ${row['24h Volume']:,.0f} |
                     | ICO 날짜 | {row['ICO Date']} |
