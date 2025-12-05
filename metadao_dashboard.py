@@ -1621,11 +1621,12 @@ def render_raw_data(df: pd.DataFrame):
 # ============================================
 
 def main():
-    # 그라데이션 타이틀 (로켓 이모지는 그대로, 글씨만 그라데이션)
+    # 그라데이션 타이틀 (로켓 이모지는 색상 제외)
     st.markdown("""
-    <h1 style='margin-bottom: 0;'>
-        <span style='font-size: 1em;'>🚀</span> <span style='background: linear-gradient(90deg, #E91E8C, #FF6B9D, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>MetaDAO ICO 토큰 분석 대시보드</span>
-    </h1>
+    <div style='display: flex; align-items: center; gap: 10px; margin-bottom: 0;'>
+        <span style='font-size: 2.5rem;'>🚀</span>
+        <h1 style='margin: 0; background: linear-gradient(90deg, #E91E8C, #FF6B9D, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>MetaDAO ICO 토큰 분석 대시보드</h1>
+    </div>
     """, unsafe_allow_html=True)
     st.caption("MetaDAO 런치패드 ICO 8개 토큰 상세 분석 | MetaDAO.fi + DexScreener + GeckoTerminal API")
     
@@ -1693,11 +1694,10 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666; font-size: 0.85em;'>
-    Built by <a href='https://x.com/maharishi1014' target='_blank' style='color: #E91E8C; text-decoration: none;'>@maharishi1014</a>
+    Built by <a href='https://x.com/alfy' target='_blank' style='color: #E91E8C; text-decoration: none;'>@alfy</a>
     </div>
     """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
     main()
-
