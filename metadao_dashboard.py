@@ -1389,19 +1389,6 @@ def render_profit_simulation(df: pd.DataFrame):
                         "ROI": f"{current_roi:+.1f}%"
                     })
                 
-                # 상장가 기준 (5분 후 매도 가정)
-                if launch_price:
-                    launch_value = tokens_received * launch_price
-                    launch_profit = launch_value - effective_investment
-                    launch_roi = (launch_price / ico_price - 1) * 100
-                    price_data.append({
-                        "시점": "⚡ 상장가 (5분)",
-                        "가격": f"${launch_price:.4f}",
-                        "가치": f"${launch_value:,.2f}",
-                        "손익": f"${launch_profit:+,.2f}",
-                        "ROI": f"{launch_roi:+.1f}%"
-                    })
-                
                 # ATH 기준
                 ath = token_data.get("ATH")
                 if ath:
@@ -1435,15 +1422,12 @@ def render_profit_simulation(df: pd.DataFrame):
                     st.dataframe(price_df, use_container_width=True, hide_index=True)
                 
                 # 요약 메트릭
-                m1, m2, m3 = st.columns(3)
+                m1, m2 = st.columns(2)
                 with m1:
                     st.metric("받은 토큰", f"{tokens_received:,.2f} {selected_token}")
                 with m2:
                     if current_price:
                         st.metric("현재 가치", f"${current_value:,.2f}", f"{current_roi:+.1f}%")
-                with m3:
-                    if launch_price:
-                        st.metric("5분 매도 시", f"${launch_value:,.2f}", f"{launch_roi:+.1f}%")
     
     else:
         # 전체 토큰 비교 모드 (기존 로직)
@@ -1486,11 +1470,6 @@ def render_profit_simulation(df: pd.DataFrame):
                     profit = current_value - effective_inv
                     roi_pct = (current_price / ico_price - 1) * 100
                     
-                    # 5분 (상장가) ROI
-                    launch_roi = None
-                    if launch_price:
-                        launch_roi = (launch_price / ico_price - 1) * 100
-                    
                     sim_data.append({
                         "토큰": row["심볼"],
                         "할당률": f"{allocation_rate*100:.1f}%",
@@ -1498,30 +1477,25 @@ def render_profit_simulation(df: pd.DataFrame):
                         "받은 토큰": tokens_bought,
                         "현재 가치": current_value,
                         "손익": profit,
-                        "현재 ROI": roi_pct,
-                        "5분 ROI": launch_roi
+                        "현재 ROI": roi_pct
                     })
             
             if sim_data:
                 sim_df = pd.DataFrame(sim_data)
                 
-                # 바 차트 - 현재 ROI vs 5분 ROI 비교
+                # 바 차트 - 현재 ROI
                 fig = go.Figure()
                 fig.add_trace(go.Bar(
                     name='현재 ROI (%)',
                     x=sim_df["토큰"],
                     y=sim_df["현재 ROI"],
-                    marker_color=COLORS["chart_current_roi"]
-                ))
-                fig.add_trace(go.Bar(
-                    name='5분 ROI (%)',
-                    x=sim_df["토큰"],
-                    y=sim_df["5분 ROI"].fillna(0),
-                    marker_color=COLORS["chart_launch_roi"]
+                    marker_color=COLORS["chart_current_roi"],
+                    text=sim_df["현재 ROI"].apply(lambda x: f"{x:+.1f}%"),
+                    textposition="outside",
+                    textfont=dict(color=COLORS["text_primary"], size=11)
                 ))
                 fig.update_layout(
-                    title=f"${investment:,.0f} 투자 시 ROI 비교 (현재 vs 상장 5분)",
-                    barmode='group'
+                    title=f"${investment:,.0f} 투자 시 현재 ROI"
                 )
                 fig.add_hline(y=0, line_dash="dash", line_color=COLORS["text_secondary"])
                 fig = apply_dark_layout(fig, height=350)
@@ -1534,8 +1508,7 @@ def render_profit_simulation(df: pd.DataFrame):
                         "받은 토큰": "{:,.2f}",
                         "현재 가치": "${:,.2f}",
                         "손익": "${:+,.2f}",
-                        "현재 ROI": "{:+.1f}%",
-                        "5분 ROI": lambda x: f"{x:+.1f}%" if pd.notna(x) else "N/A"
+                        "현재 ROI": "{:+.1f}%"
                     }),
                     use_container_width=True
                 )
