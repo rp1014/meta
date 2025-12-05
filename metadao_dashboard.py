@@ -646,6 +646,24 @@ def render_overview(df: pd.DataFrame):
             st.metric("최고 ATH ROI", f"{max_ath_roi['심볼']} ({max_ath_roi['ATH ROI (x)']:.1f}x)")
 
 
+def format_number_short(val, prefix: str = "") -> str:
+    """숫자를 K/M/B 단위로 포맷"""
+    if val is None or (isinstance(val, float) and np.isnan(val)):
+        return "N/A"
+    
+    abs_val = abs(val)
+    sign = "-" if val < 0 else ""
+    
+    if abs_val >= 1_000_000_000:
+        return f"{sign}{prefix}{abs_val / 1_000_000_000:.2f}B"
+    elif abs_val >= 1_000_000:
+        return f"{sign}{prefix}{abs_val / 1_000_000:.2f}M"
+    elif abs_val >= 1_000:
+        return f"{sign}{prefix}{abs_val / 1_000:.2f}K"
+    else:
+        return f"{sign}{prefix}{abs_val:,.2f}"
+
+
 def format_value(val, fmt_type: str = "number") -> str:
     """값 포맷팅"""
     if val is None or (isinstance(val, float) and np.isnan(val)):
@@ -654,13 +672,13 @@ def format_value(val, fmt_type: str = "number") -> str:
     if fmt_type == "price":
         return f"${val:.4f}"
     elif fmt_type == "usd":
-        return f"${val:,.0f}"
+        return format_number_short(val, prefix="$")
     elif fmt_type == "roi_x":
         return f"{val:.2f}x"
     elif fmt_type == "pct":
         return f"{val:+.1f}%"
     elif fmt_type == "number":
-        return f"{val:,.0f}"
+        return format_number_short(val)
     return str(val)
 
 
@@ -668,12 +686,12 @@ def render_summary_table(df: pd.DataFrame):
     """요약 테이블"""
     st.header("📋 한눈에 보기")
     
-    # 요청한 컬럼 순서: 심볼, 이름, ICO날짜, 커밋USD, 모금액, 청약배수, 참여지갑, ICO세일가, 현재가, Launch ROI, ATH ROI, ATL ROI, Liquidity, 카테고리
+    # 컬럼 순서: 심볼, 이름, ICO날짜, 모금액, 커밋USD, 청약배수, 참여지갑, ICO세일가, 현재가, 현재ROI, ATH ROI, ATL ROI, Liquidity, 카테고리
     display_cols = [
         "심볼", "이름", "ICO 날짜", 
-        "커밋 (USD)", "모금액 (USD)", "청약배수", "참여 지갑",
+        "모금액 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
         "ICO 세일가", "현재가", 
-        "Launch ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
+        "현재 ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
         "유동성", "카테고리"
     ]
     
@@ -696,19 +714,28 @@ def render_summary_table(df: pd.DataFrame):
     
     styled = display_df.style.applymap(style_roi, subset=roi_cols)
     
-    # 숫자 포맷
+    # 숫자 포맷 (K/M/B 단위)
+    def fmt_short_usd(x):
+        if pd.isna(x):
+            return "N/A"
+        return format_number_short(x, prefix="$")
+    
+    def fmt_short_num(x):
+        if pd.isna(x):
+            return "N/A"
+        return format_number_short(x)
+    
     format_dict = {
         "ICO 세일가": "${:.4f}",
-        "상장가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
         "현재가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
-        "Launch ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
+        "현재 ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ATH ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ATL ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "커밋 (USD)": "${:,.0f}",
-        "모금액 (USD)": "${:,.0f}",
-        "유동성": lambda x: f"${x:,.0f}" if pd.notna(x) else "N/A",
+        "커밋 (USD)": fmt_short_usd,
+        "모금액 (USD)": fmt_short_usd,
+        "유동성": fmt_short_usd,
         "청약배수": "{:.1f}x",
-        "참여 지갑": "{:,.0f}"
+        "참여 지갑": fmt_short_num
     }
     
     styled = styled.format(format_dict, na_rep="N/A")
@@ -1296,8 +1323,56 @@ def render_raw_data(df: pd.DataFrame):
     """원본 데이터"""
     st.header("📥 원본 데이터")
     
-    st.dataframe(df, use_container_width=True, height=400)
+    # 표시할 주요 컬럼 선택 (TGE Timestamp 제외, 세일가로 대체)
+    main_cols = [
+        "심볼", "이름", "카테고리", "ICO 날짜",
+        "ICO 세일가", "현재가", "ATH", "ATL",
+        "모금액 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
+        "현재 ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
+        "유동성", "시가총액", "FDV", "24h 거래량",
+        "세일 토큰", "총 공급량", "세일 비율 (%)"
+    ]
     
+    # 존재하는 컬럼만 선택
+    available_cols = [col for col in main_cols if col in df.columns]
+    display_df = df[available_cols].copy()
+    
+    # K/M/B 포맷 적용
+    def fmt_short_usd(x):
+        if pd.isna(x):
+            return "N/A"
+        return format_number_short(x, prefix="$")
+    
+    def fmt_short_num(x):
+        if pd.isna(x):
+            return "N/A"
+        return format_number_short(x)
+    
+    format_dict = {
+        "ICO 세일가": "${:.4f}",
+        "현재가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
+        "ATH": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
+        "ATL": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
+        "모금액 (USD)": fmt_short_usd,
+        "커밋 (USD)": fmt_short_usd,
+        "유동성": fmt_short_usd,
+        "시가총액": fmt_short_usd,
+        "FDV": fmt_short_usd,
+        "24h 거래량": fmt_short_usd,
+        "세일 토큰": fmt_short_num,
+        "총 공급량": fmt_short_num,
+        "청약배수": "{:.1f}x",
+        "참여 지갑": fmt_short_num,
+        "현재 ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
+        "ATH ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
+        "ATL ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
+        "세일 비율 (%)": "{:.1f}%"
+    }
+    
+    styled = display_df.style.format(format_dict, na_rep="N/A")
+    st.dataframe(styled, use_container_width=True, height=400)
+    
+    # CSV 다운로드 (원본 숫자 포맷)
     csv = df.to_csv(index=False)
     st.download_button(
         label="📥 CSV 다운로드",
