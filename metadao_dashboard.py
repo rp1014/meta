@@ -31,6 +31,199 @@ st.set_page_config(
 )
 
 # ============================================
+# 색상 팔레트 (통일된 다크 테마)
+# ============================================
+COLORS = {
+    # 배경
+    "bg_primary": "#020617",
+    "bg_secondary": "#0B1120",
+    "bg_card": "#0F172A",
+    "border": "#1E293B",
+    
+    # 텍스트
+    "text_primary": "#E5E7EB",
+    "text_secondary": "#9CA3AF",
+    "text_muted": "#6B7280",
+    
+    # 포인트
+    "accent_primary": "#06B6D4",
+    "accent_secondary": "#0EA5E9",
+    "accent_warning": "#FACC15",
+    
+    # 상태
+    "positive": "#22C55E",
+    "positive_light": "#4ADE80",
+    "positive_bg": "#022C22",
+    "negative": "#EF4444",
+    "negative_light": "#FCA5A5",
+    "negative_bg": "#3F1D2B",
+    "neutral_bg": "#064E3B",
+    
+    # 차트용
+    "chart_current_roi": "#22C55E",
+    "chart_launch_roi": "#0EA5E9",
+    "chart_ath_roi": "#FACC15",
+    "chart_atl_roi": "#FB7185",
+    "chart_featured": "#4ECDC4",
+    "chart_permissionless": "#FF6B6B",
+}
+
+# 연속 색 스케일 (ROI 등)
+COLOR_SCALE_ROI = ["#F97373", "#FACC15", "#22C55E"]
+
+# ============================================
+# 커스텀 CSS 주입
+# ============================================
+def inject_custom_css():
+    st.markdown(f"""
+    <style>
+    /* 전체 배경 */
+    .stApp {{
+        background-color: {COLORS["bg_primary"]};
+    }}
+    
+    /* 사이드바 */
+    [data-testid="stSidebar"] {{
+        background-color: {COLORS["bg_secondary"]};
+        border-right: 1px solid {COLORS["border"]};
+    }}
+    
+    /* 메트릭 카드 */
+    [data-testid="stMetricValue"] {{
+        color: {COLORS["text_primary"]};
+    }}
+    [data-testid="stMetricLabel"] {{
+        color: {COLORS["text_secondary"]};
+    }}
+    
+    /* 헤더 */
+    h1, h2, h3 {{
+        color: {COLORS["text_primary"]} !important;
+    }}
+    
+    /* 캡션 */
+    .stCaption {{
+        color: {COLORS["text_secondary"]} !important;
+    }}
+    
+    /* 탭 */
+    .stTabs [data-baseweb="tab-list"] {{
+        gap: 8px;
+        background-color: {COLORS["bg_secondary"]};
+        border-radius: 8px;
+        padding: 4px;
+    }}
+    .stTabs [data-baseweb="tab"] {{
+        background-color: transparent;
+        color: {COLORS["text_secondary"]};
+        border-radius: 6px;
+    }}
+    .stTabs [aria-selected="true"] {{
+        background-color: {COLORS["bg_card"]};
+        color: {COLORS["accent_primary"]};
+    }}
+    
+    /* 버튼 */
+    .stButton > button {{
+        background-color: {COLORS["accent_primary"]};
+        color: {COLORS["bg_primary"]};
+        border: none;
+        border-radius: 6px;
+    }}
+    .stButton > button:hover {{
+        background-color: {COLORS["accent_secondary"]};
+    }}
+    
+    /* 데이터프레임 */
+    .stDataFrame {{
+        border: 1px solid {COLORS["border"]};
+        border-radius: 8px;
+    }}
+    
+    /* 익스팬더 */
+    .streamlit-expanderHeader {{
+        background-color: {COLORS["bg_card"]};
+        border: 1px solid {COLORS["border"]};
+        border-radius: 8px;
+    }}
+    
+    /* 카드 스타일 */
+    .custom-card {{
+        background-color: {COLORS["bg_card"]};
+        border: 1px solid {COLORS["border"]};
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }}
+    
+    /* 구분선 */
+    hr {{
+        border-color: {COLORS["border"]};
+    }}
+    
+    /* 셀렉트박스/인풋 */
+    .stSelectbox, .stNumberInput {{
+        color: {COLORS["text_primary"]};
+    }}
+    
+    /* 정보 박스 */
+    .stAlert {{
+        background-color: {COLORS["bg_card"]};
+        border: 1px solid {COLORS["border"]};
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+# CSS 주입 실행
+inject_custom_css()
+
+
+# ============================================
+# Plotly 차트 공통 레이아웃 함수
+# ============================================
+def apply_dark_layout(fig, height: int = 400):
+    """모든 Plotly 차트에 공통 다크 레이아웃 적용"""
+    fig.update_layout(
+        template="plotly_dark",
+        paper_bgcolor=COLORS["bg_primary"],
+        plot_bgcolor=COLORS["bg_primary"],
+        font=dict(color=COLORS["text_primary"], family="sans-serif"),
+        height=height,
+        margin=dict(l=20, r=20, t=40, b=20),
+        legend=dict(
+            bgcolor="rgba(15,23,42,0.8)",
+            bordercolor=COLORS["border"],
+            borderwidth=1,
+            font=dict(color=COLORS["text_primary"])
+        ),
+        xaxis=dict(
+            gridcolor=COLORS["border"],
+            zerolinecolor=COLORS["border"],
+        ),
+        yaxis=dict(
+            gridcolor=COLORS["border"],
+            zerolinecolor=COLORS["border"],
+        )
+    )
+    return fig
+
+
+# ============================================
+# ROI 스타일링 함수 (통일)
+# ============================================
+def style_roi(val):
+    """ROI 컬럼 스타일링 (통일된 색상)"""
+    if pd.isna(val) or val is None:
+        return f"background-color: {COLORS['bg_primary']}; color: {COLORS['text_secondary']}"
+    if val >= 2:
+        return f"background-color: {COLORS['positive_bg']}; color: {COLORS['positive_light']}"
+    elif val >= 1:
+        return f"background-color: {COLORS['neutral_bg']}; color: #BBF7D0"
+    else:
+        return f"background-color: {COLORS['negative_bg']}; color: {COLORS['negative_light']}"
+
+
+# ============================================
 # MetaDAO ICO 토큰 데이터 (공식 크롤링 데이터 기준)
 # 
 # 필드 설명:
@@ -699,19 +892,8 @@ def render_summary_table(df: pd.DataFrame):
     available_cols = [col for col in display_cols if col in df.columns]
     display_df = df[available_cols].copy()
     
-    # 스타일링 함수
-    def style_roi(val):
-        if pd.isna(val) or val is None:
-            return "background-color: #1a1a2e; color: #888"
-        if val >= 2:
-            return "background-color: #0d4d1a; color: #4ade80"
-        elif val >= 1:
-            return "background-color: #1a3d1a; color: #86efac"
-        else:
-            return "background-color: #4d0d0d; color: #f87171"
-    
+    # ROI 컬럼에 통일된 스타일 적용
     roi_cols = [col for col in available_cols if "ROI" in col and "(x)" in col]
-    
     styled = display_df.style.applymap(style_roi, subset=roi_cols)
     
     # 숫자 포맷 (K/M/B 단위)
@@ -883,9 +1065,7 @@ def render_roi_chart(df: pd.DataFrame):
         name="현재 ROI",
         x=df["심볼"],
         y=df["현재 ROI (x)"].fillna(0),
-        marker_color=df["현재 ROI (x)"].apply(
-            lambda x: "#22c55e" if x and x >= 1 else "#ef4444"
-        ),
+        marker_color=COLORS["chart_current_roi"],
         text=df["현재 ROI (x)"].apply(lambda x: f"{x:.2f}x" if x else "N/A"),
         textposition="outside"
     ))
@@ -895,7 +1075,7 @@ def render_roi_chart(df: pd.DataFrame):
         name="Launch ROI (5분)",
         x=df["심볼"],
         y=df["Launch ROI (x)"].fillna(0),
-        marker_color="rgba(255, 107, 107, 0.7)",
+        marker_color=COLORS["chart_launch_roi"],
         text=df["Launch ROI (x)"].apply(lambda x: f"{x:.2f}x" if pd.notna(x) else ""),
         textposition="outside"
     ))
@@ -905,20 +1085,20 @@ def render_roi_chart(df: pd.DataFrame):
         name="ATH ROI",
         x=df["심볼"],
         y=df["ATH ROI (x)"].fillna(0),
-        marker_color="rgba(250, 204, 21, 0.7)",
+        marker_color=COLORS["chart_ath_roi"],
         text=df["ATH ROI (x)"].apply(lambda x: f"{x:.2f}x" if pd.notna(x) else ""),
         textposition="outside"
     ))
     
-    fig.add_hline(y=1, line_dash="dash", line_color="white", annotation_text="손익분기점")
+    fig.add_hline(y=1, line_dash="dash", line_color=COLORS["text_secondary"], 
+                  annotation_text="손익분기점", annotation_font_color=COLORS["text_secondary"])
     
     fig.update_layout(
         barmode="group",
-        template="plotly_dark",
-        height=450,
         legend=dict(orientation="h", yanchor="bottom", y=1.02)
     )
     
+    fig = apply_dark_layout(fig, height=450)
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -940,19 +1120,19 @@ def render_tge_roi_chart(df: pd.DataFrame):
         y="심볼",
         orientation='h',
         color="Launch ROI (x)",
-        color_continuous_scale=["#ef4444", "#facc15", "#22c55e"],
+        color_continuous_scale=COLOR_SCALE_ROI,
         title="상장 직후 (5분 내) 매도 시 ROI"
     )
     
-    fig.add_vline(x=1, line_dash="dash", line_color="white", annotation_text="손익분기점")
+    fig.add_vline(x=1, line_dash="dash", line_color=COLORS["text_secondary"], 
+                  annotation_text="손익분기점", annotation_font_color=COLORS["text_secondary"])
     
     fig.update_layout(
-        template="plotly_dark",
-        height=400,
         xaxis_title="ROI (x)",
         yaxis_title=""
     )
     
+    fig = apply_dark_layout(fig, height=400)
     st.plotly_chart(fig, use_container_width=True)
 
 
@@ -969,20 +1149,19 @@ def render_allocation_chart(df: pd.DataFrame):
             name='커밋액 (Committed)',
             x=df["심볼"],
             y=df["커밋 (USD)"],
-            marker_color='rgba(255, 165, 0, 0.7)'
+            marker_color=COLORS["chart_ath_roi"]  # 노란색
         ))
         fig.add_trace(go.Bar(
             name='실제 모금액 (Raised)',
             x=df["심볼"],
             y=df["모금액 (USD)"],
-            marker_color='rgba(0, 255, 127, 0.7)'
+            marker_color=COLORS["positive"]  # 초록색
         ))
         fig.update_layout(
             title="커밋액 vs 실제 모금액",
-            template="plotly_dark",
-            height=350,
             barmode='group'
         )
+        fig = apply_dark_layout(fig, height=350)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -992,10 +1171,10 @@ def render_allocation_chart(df: pd.DataFrame):
             x="심볼",
             y="세일 비율 (%)",
             color="현재 ROI (x)",
-            color_continuous_scale=["red", "yellow", "green"],
+            color_continuous_scale=COLOR_SCALE_ROI,
             title="세일 물량 비율 (% of Total Supply)"
         )
-        fig.update_layout(template="plotly_dark", height=350)
+        fig = apply_dark_layout(fig, height=350)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -1013,21 +1192,22 @@ def render_oversubscription_chart(df: pd.DataFrame):
             y="심볼",
             orientation='h',
             color="Permissionless",
-            color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
+            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
             title="토큰별 청약배수 (Oversubscription)",
             labels={"Permissionless": "Permissionless"}
         )
         fig.update_layout(
-            template="plotly_dark", 
-            height=400,
             xaxis_title="청약배수 (x)",
             yaxis_title=""
         )
         # 참조선 추가
-        fig.add_vline(x=10, line_dash="dash", line_color="yellow", 
-                      annotation_text="10x", annotation_position="top right")
-        fig.add_vline(x=50, line_dash="dash", line_color="orange",
-                      annotation_text="50x", annotation_position="top right")
+        fig.add_vline(x=10, line_dash="dash", line_color=COLORS["accent_warning"], 
+                      annotation_text="10x", annotation_position="top right",
+                      annotation_font_color=COLORS["accent_warning"])
+        fig.add_vline(x=50, line_dash="dash", line_color=COLORS["negative"],
+                      annotation_text="50x", annotation_position="top right",
+                      annotation_font_color=COLORS["negative"])
+        fig = apply_dark_layout(fig, height=400)
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
@@ -1038,16 +1218,15 @@ def render_oversubscription_chart(df: pd.DataFrame):
             y="심볼",
             orientation='h',
             color="Permissionless",
-            color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
+            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
             title="토큰별 참여자 수 (Contributors)",
             labels={"Permissionless": "Permissionless"}
         )
         fig.update_layout(
-            template="plotly_dark", 
-            height=400,
             xaxis_title="참여자 수",
             yaxis_title=""
         )
+        fig = apply_dark_layout(fig, height=400)
         st.plotly_chart(fig, use_container_width=True)
     
     # 청약배수 vs ROI 상관관계
@@ -1063,17 +1242,18 @@ def render_oversubscription_chart(df: pd.DataFrame):
             y="현재 ROI (x)",
             size="참여 지갑",
             color="Permissionless",
-            color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
+            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
             hover_data=["심볼", "이름", "모금액 (USD)"],
             title="청약배수와 현재 ROI 관계 (버블 크기 = 참여자 수)",
             labels={"Permissionless": "Permissionless"}
         )
-        fig.update_layout(template="plotly_dark", height=450)
         
         # 1x ROI 참조선
-        fig.add_hline(y=1, line_dash="dash", line_color="white",
-                      annotation_text="원금", annotation_position="right")
+        fig.add_hline(y=1, line_dash="dash", line_color=COLORS["text_secondary"],
+                      annotation_text="원금", annotation_position="right",
+                      annotation_font_color=COLORS["text_secondary"])
         
+        fig = apply_dark_layout(fig, height=450)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -1276,21 +1456,20 @@ def render_profit_simulation(df: pd.DataFrame):
                     name='현재 ROI (%)',
                     x=sim_df["토큰"],
                     y=sim_df["현재 ROI"],
-                    marker_color='#4ecdc4'
+                    marker_color=COLORS["chart_current_roi"]
                 ))
                 fig.add_trace(go.Bar(
                     name='5분 ROI (%)',
                     x=sim_df["토큰"],
                     y=sim_df["5분 ROI"].fillna(0),
-                    marker_color='#ff6b6b'
+                    marker_color=COLORS["chart_launch_roi"]
                 ))
                 fig.update_layout(
                     title=f"${investment:,.0f} 투자 시 ROI 비교 (현재 vs 상장 5분)",
-                    template="plotly_dark",
-                    height=350,
                     barmode='group'
                 )
-                fig.add_hline(y=0, line_dash="dash", line_color="white")
+                fig.add_hline(y=0, line_dash="dash", line_color=COLORS["text_secondary"])
+                fig = apply_dark_layout(fig, height=350)
                 st.plotly_chart(fig, use_container_width=True)
                 
                 # 테이블
