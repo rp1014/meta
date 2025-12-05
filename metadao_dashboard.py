@@ -1257,20 +1257,32 @@ def render_oversubscription_chart(df: pd.DataFrame):
     col1, col2 = st.columns(2)
     
     with col1:
-        # 청약배수 차트
-        fig = px.bar(
-            df.sort_values("청약배수", ascending=True),
-            x="청약배수",
-            y="심볼",
-            orientation='h',
-            color="Permissionless",
-            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
-            title="토큰별 청약배수 (Oversubscription)",
-            labels={"Permissionless": "Permissionless"}
-        )
+        # 청약배수 차트 - 숫자 표시
+        sorted_df = df.sort_values("청약배수", ascending=True)
+        fig = go.Figure()
+        
+        # Featured vs Permissionless 분리
+        for is_perm, color, name in [(False, COLORS["chart_featured"], "Featured"), 
+                                      (True, COLORS["chart_permissionless"], "Permissionless")]:
+            mask = sorted_df["Permissionless"] == is_perm
+            subset = sorted_df[mask]
+            if len(subset) > 0:
+                fig.add_trace(go.Bar(
+                    name=name,
+                    y=subset["심볼"],
+                    x=subset["청약배수"],
+                    orientation='h',
+                    marker_color=color,
+                    text=subset["청약배수"].apply(lambda x: f"{x:.1f}x"),
+                    textposition="outside",
+                    textfont=dict(color=COLORS["text_primary"], size=11)
+                ))
+        
         fig.update_layout(
+            title="토큰별 청약배수 (Oversubscription)",
             xaxis_title="청약배수 (x)",
-            yaxis_title=""
+            yaxis_title="",
+            barmode='group'
         )
         # 참조선 추가
         fig.add_vline(x=10, line_dash="dash", line_color=COLORS["accent_warning"], 
@@ -1283,49 +1295,33 @@ def render_oversubscription_chart(df: pd.DataFrame):
         st.plotly_chart(fig, use_container_width=True)
     
     with col2:
-        # 참여자 수 차트
-        fig = px.bar(
-            df.sort_values("참여 지갑", ascending=True),
-            x="참여 지갑",
-            y="심볼",
-            orientation='h',
-            color="Permissionless",
-            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
-            title="토큰별 참여자 수 (Contributors)",
-            labels={"Permissionless": "Permissionless"}
-        )
+        # 참여자 수 차트 - 숫자 표시
+        sorted_df = df.sort_values("참여 지갑", ascending=True)
+        fig = go.Figure()
+        
+        for is_perm, color, name in [(False, COLORS["chart_featured"], "Featured"), 
+                                      (True, COLORS["chart_permissionless"], "Permissionless")]:
+            mask = sorted_df["Permissionless"] == is_perm
+            subset = sorted_df[mask]
+            if len(subset) > 0:
+                fig.add_trace(go.Bar(
+                    name=name,
+                    y=subset["심볼"],
+                    x=subset["참여 지갑"],
+                    orientation='h',
+                    marker_color=color,
+                    text=subset["참여 지갑"].apply(lambda x: format_number_short(x)),
+                    textposition="outside",
+                    textfont=dict(color=COLORS["text_primary"], size=11)
+                ))
+        
         fig.update_layout(
+            title="토큰별 참여자 수 (Contributors)",
             xaxis_title="참여자 수",
-            yaxis_title=""
+            yaxis_title="",
+            barmode='group'
         )
         fig = apply_dark_layout(fig, height=400)
-        st.plotly_chart(fig, use_container_width=True)
-    
-    # 청약배수 vs ROI 상관관계
-    st.subheader("🔗 청약배수 vs ROI 상관관계")
-    
-    # ROI가 있는 데이터만 필터링
-    corr_df = df[df["현재 ROI (x)"].notna()].copy()
-    
-    if len(corr_df) > 0:
-        fig = px.scatter(
-            corr_df,
-            x="청약배수",
-            y="현재 ROI (x)",
-            size="참여 지갑",
-            color="Permissionless",
-            color_discrete_map={True: COLORS["chart_permissionless"], False: COLORS["chart_featured"]},
-            hover_data=["심볼", "이름", "모금액 (USD)"],
-            title="청약배수와 현재 ROI 관계 (버블 크기 = 참여자 수)",
-            labels={"Permissionless": "Permissionless"}
-        )
-        
-        # 1x ROI 참조선
-        fig.add_hline(y=1, line_dash="dash", line_color=COLORS["text_secondary"],
-                      annotation_text="원금", annotation_position="right",
-                      annotation_font_color=COLORS["text_secondary"])
-        
-        fig = apply_dark_layout(fig, height=450)
         st.plotly_chart(fig, use_container_width=True)
 
 
@@ -1638,7 +1634,12 @@ def render_raw_data(df: pd.DataFrame):
 # ============================================
 
 def main():
-    st.title("🚀 MetaDAO ICO 토큰 분석 대시보드")
+    # 그라데이션 타이틀
+    st.markdown("""
+    <h1 style='margin-bottom: 0;'>
+        🚀 <span style='background: linear-gradient(90deg, #E91E8C, #FF6B9D, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>MetaDAO ICO 토큰 분석 대시보드</span>
+    </h1>
+    """, unsafe_allow_html=True)
     st.caption("MetaDAO 런치패드 ICO 8개 토큰 상세 분석 | MetaDAO.fi + DexScreener + GeckoTerminal API")
     
     # 사이드바
@@ -1693,7 +1694,6 @@ def main():
     with tab3:
         render_roi_chart(df)
         render_oversubscription_chart(df)
-        render_tge_roi_chart(df)
         render_allocation_chart(df)
     
     with tab4:
