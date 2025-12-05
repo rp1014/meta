@@ -834,22 +834,9 @@ def render_sidebar() -> Tuple[str, str, Tuple[str, bool]]:
         st.divider()
         
         st.markdown("""
-        ### 📊 데이터 소스
-        - MetaDAO.fi (크롤링)
-        - DexScreener API
-        - GeckoTerminal API
-        
         ### 🏷️ 런치 타입
         - **Featured**: MetaDAO 검증 프로젝트
         - **Permissionless**: 누구나 런칭 가능
-        
-        ### 📝 Launch ROI
-        상장가 / ICO가 = 5분 후 매도 ROI
-        
-        ### ⚠️ 주의
-        - 실시간 데이터 지연 가능
-        - ATH/ATL은 조회 기간 한정
-        - 투자 조언 아님, DYOR!
         """)
         
         return selected_category, selected_launch_type, sort_options[sort_by]
@@ -1634,10 +1621,10 @@ def render_raw_data(df: pd.DataFrame):
 # ============================================
 
 def main():
-    # 그라데이션 타이틀
+    # 그라데이션 타이틀 (로켓 이모지는 그대로, 글씨만 그라데이션)
     st.markdown("""
     <h1 style='margin-bottom: 0;'>
-        🚀 <span style='background: linear-gradient(90deg, #E91E8C, #FF6B9D, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>MetaDAO ICO 토큰 분석 대시보드</span>
+        <span style='font-size: 1em;'>🚀</span> <span style='background: linear-gradient(90deg, #E91E8C, #FF6B9D, #A855F7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;'>MetaDAO ICO 토큰 분석 대시보드</span>
     </h1>
     """, unsafe_allow_html=True)
     st.caption("MetaDAO 런치패드 ICO 8개 토큰 상세 분석 | MetaDAO.fi + DexScreener + GeckoTerminal API")
@@ -1706,8 +1693,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666; font-size: 0.85em;'>
-    Data: MetaDAO.fi, DexScreener API, GeckoTerminal API | Built with Streamlit<br>
-    ⚠️ 투자 조언이 아닙니다. DYOR!
+    Built by <a href='https://x.com/alfy' target='_blank' style='color: #E91E8C; text-decoration: none;'>@alfy</a>
     </div>
     """, unsafe_allow_html=True)
 
