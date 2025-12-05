@@ -438,55 +438,55 @@ def get_all_token_data() -> pd.DataFrame:
         is_permissionless = info.get("is_permissionless", False)
         launch_price = info.get("launch_price")
         
-        # 상장가 대비 ROI (있는 경우)
+        # Launch ROI = 상장가 / ICO가 (5분 후 바로 매도 시 ROI)
         launch_roi_x, launch_roi_pct = None, None
-        if launch_price and current_price:
-            launch_roi_x, launch_roi_pct = calculate_roi(current_price, launch_price)
+        if launch_price and ico_price:
+            launch_roi_x, launch_roi_pct = calculate_roi(launch_price, ico_price)
         
         records.append({
             # 기본 정보
-            "Symbol": symbol,
-            "Name": info["name"],
-            "Category": info["category"],
-            "Description": info["description"],
+            "심볼": symbol,
+            "이름": info["name"],
+            "카테고리": info["category"],
+            "설명": info["description"],
             "Mint": mint,
             "Pair Address": pair_address,
-            "ICO Date": info["ico_date"],
+            "ICO 날짜": info["ico_date"],
             "TGE Timestamp": tge_timestamp,
-            "Is Permissionless": is_permissionless,
+            "Permissionless": is_permissionless,
             
             # 펀드레이징 데이터
-            "ICO Price": ico_price,
-            "Launch Price": launch_price,
-            "Committed (USD)": committed_usd,
-            "Raised (USD)": ico_raise,
-            "Min Raise (USD)": min_raise_usd,
+            "ICO 세일가": ico_price,
+            "상장가": launch_price,
+            "커밋 (USD)": committed_usd,
+            "모금액 (USD)": ico_raise,
+            "최소 목표 (USD)": min_raise_usd,
             "Allowance (USD)": allowance_usd,
-            "Contributors": contributors,
-            "Oversubscription": oversubscription,
+            "참여 지갑": contributors,
+            "청약배수": oversubscription,
             
             # 세일 할당량
-            "Sale Tokens": sale_tokens,
-            "Total Supply": total_supply,
-            "Sale % of Supply": round(sale_ratio, 2),
+            "세일 토큰": sale_tokens,
+            "총 공급량": total_supply,
+            "세일 비율 (%)": round(sale_ratio, 2),
             
             # 현재 시장 데이터
-            "Current Price": current_price,
-            "24h Change (%)": price_change_24h,
-            "24h Volume": volume_24h,
-            "Liquidity": liquidity,
-            "Market Cap": market_cap,
+            "현재가": current_price,
+            "24h 변동 (%)": price_change_24h,
+            "24h 거래량": volume_24h,
+            "유동성": liquidity,
+            "시가총액": market_cap,
             "FDV": fdv,
             
             # ATH/ATL (전체 기간)
             "ATH": ath_all,
             "ATL": atl_all,
             
-            # 현재 ROI
-            "ROI (x)": roi_x,
-            "ROI (%)": roi_pct,
+            # 현재 ROI (현재가/ICO가)
+            "현재 ROI (x)": roi_x,
+            "현재 ROI (%)": roi_pct,
             
-            # 상장가 대비 ROI
+            # Launch ROI (상장가/ICO가 = 5분 후 매도 시)
             "Launch ROI (x)": launch_roi_x,
             "Launch ROI (%)": launch_roi_pct,
             
@@ -513,9 +513,9 @@ def get_all_token_data() -> pd.DataFrame:
             "ROI_60m (%)": roi_60m_pct,
             
             # 세일 물량 현재 가치
-            "Sale Value Now": sale_value_now,
-            "Profit (USD)": profit_usd,
-            "Profit (%)": round(profit_pct, 2)
+            "세일 현재 가치": sale_value_now,
+            "손익 (USD)": profit_usd,
+            "손익 (%)": round(profit_pct, 2)
         })
         
         # Rate limit 방지
@@ -598,52 +598,52 @@ def render_overview(df: pd.DataFrame):
     col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
-        total_committed = df["Committed (USD)"].sum()
+        total_committed = df["커밋 (USD)"].sum()
         st.metric("총 커밋액", f"${total_committed:,.0f}")
     
     with col2:
-        total_raised = df["Raised (USD)"].sum()
+        total_raised = df["모금액 (USD)"].sum()
         st.metric("총 모금액", f"${total_raised:,.0f}")
     
     with col3:
-        valid_roi = df[df["ROI (x)"].notna()]["ROI (x)"]
+        valid_roi = df[df["현재 ROI (x)"].notna()]["현재 ROI (x)"]
         avg_roi = valid_roi.mean() if len(valid_roi) > 0 else 0
         st.metric("평균 ROI", f"{avg_roi:.2f}x")
     
     with col4:
-        profitable = len(df[df["ROI (x)"].notna() & (df["ROI (x)"] >= 1)])
-        total = len(df[df["ROI (x)"].notna()])
+        profitable = len(df[df["현재 ROI (x)"].notna() & (df["현재 ROI (x)"] >= 1)])
+        total = len(df[df["현재 ROI (x)"].notna()])
         st.metric("수익 토큰", f"{profitable}/{total}")
     
     with col5:
-        avg_oversubscription = df["Oversubscription"].mean()
+        avg_oversubscription = df["청약배수"].mean()
         st.metric("평균 청약배수", f"{avg_oversubscription:.1f}x")
     
     # 두 번째 행
     col6, col7, col8, col9, col10 = st.columns(5)
     
     with col6:
-        max_oversubscription = df.loc[df["Oversubscription"].idxmax()]
-        st.metric("최고 청약배수", f"{max_oversubscription['Symbol']} ({max_oversubscription['Oversubscription']:.0f}x)")
+        max_oversubscription = df.loc[df["청약배수"].idxmax()]
+        st.metric("최고 청약배수", f"{max_oversubscription['심볼']} ({max_oversubscription['청약배수']:.0f}x)")
     
     with col7:
-        total_volume = df["24h Volume"].sum()
+        total_volume = df["24h 거래량"].sum()
         st.metric("총 24h 거래량", f"${total_volume:,.0f}")
     
     with col8:
-        total_liquidity = df["Liquidity"].sum()
+        total_liquidity = df["유동성"].sum()
         st.metric("총 유동성", f"${total_liquidity:,.0f}")
     
     with col9:
-        featured = len(df[~df["Is Permissionless"]])
-        permissionless = len(df[df["Is Permissionless"]])
+        featured = len(df[~df["Permissionless"]])
+        permissionless = len(df[df["Permissionless"]])
         st.metric("Featured / Permissionless", f"{featured} / {permissionless}")
     
     with col10:
         # ATH ROI 최고 토큰
         if df["ATH ROI (x)"].notna().any():
             max_ath_roi = df.loc[df["ATH ROI (x)"].idxmax()]
-            st.metric("최고 ATH ROI", f"{max_ath_roi['Symbol']} ({max_ath_roi['ATH ROI (x)']:.1f}x)")
+            st.metric("최고 ATH ROI", f"{max_ath_roi['심볼']} ({max_ath_roi['ATH ROI (x)']:.1f}x)")
 
 
 def format_value(val, fmt_type: str = "number") -> str:
@@ -668,13 +668,13 @@ def render_summary_table(df: pd.DataFrame):
     """요약 테이블"""
     st.header("📋 한눈에 보기")
     
-    # 표시할 컬럼 - Launch ROI 추가 (5분 후 매도 시 ROI)
+    # 요청한 컬럼 순서: 심볼, 이름, ICO날짜, 커밋USD, 모금액, 청약배수, 참여지갑, ICO세일가, 현재가, Launch ROI, ATH ROI, ATL ROI, Liquidity, 카테고리
     display_cols = [
-        "Symbol", "Name", "Is Permissionless",
-        "Oversubscription", "Contributors",
-        "ICO Price", "Launch Price", "Current Price", 
-        "Launch ROI (x)", "ROI (x)", "ATH ROI (x)",
-        "24h Change (%)", "Liquidity"
+        "심볼", "이름", "ICO 날짜", 
+        "커밋 (USD)", "모금액 (USD)", "청약배수", "참여 지갑",
+        "ICO 세일가", "현재가", 
+        "Launch ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
+        "유동성", "카테고리"
     ]
     
     # 존재하는 컬럼만 선택
@@ -698,17 +698,17 @@ def render_summary_table(df: pd.DataFrame):
     
     # 숫자 포맷
     format_dict = {
-        "ICO Price": "${:.4f}",
-        "Launch Price": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
-        "Current Price": "${:.4f}",
+        "ICO 세일가": "${:.4f}",
+        "상장가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
+        "현재가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
         "Launch ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "ROI (x)": "{:.2f}x",
         "ATH ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ATL ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "24h Change (%)": "{:+.2f}%",
-        "Liquidity": "${:,.0f}",
-        "Oversubscription": "{:.1f}x",
-        "Contributors": "{:,.0f}"
+        "커밋 (USD)": "${:,.0f}",
+        "모금액 (USD)": "${:,.0f}",
+        "유동성": lambda x: f"${x:,.0f}" if pd.notna(x) else "N/A",
+        "청약배수": "{:.1f}x",
+        "참여 지갑": "{:,.0f}"
     }
     
     styled = styled.format(format_dict, na_rep="N/A")
@@ -725,7 +725,7 @@ def render_token_cards(df: pd.DataFrame):
     for idx, (_, row) in enumerate(df.iterrows()):
         with cols[idx % 2]:
             # ROI 이모지
-            roi_val = row.get("ROI (x)")
+            roi_val = row.get("현재 ROI (x)")
             if roi_val and roi_val >= 2:
                 emoji = "🚀"
             elif roi_val and roi_val >= 1:
@@ -736,11 +736,11 @@ def render_token_cards(df: pd.DataFrame):
                 emoji = "❓"
             
             # Permissionless 배지
-            is_permissionless = row.get("Is Permissionless", False)
+            is_permissionless = row.get("Permissionless", False)
             badge = " 🔓" if is_permissionless else ""
             
-            st.subheader(f"{emoji} {row['Symbol']} - {row['Name']}{badge}")
-            st.caption(f"{row['Category']} | {row['Description'][:50]}...")
+            st.subheader(f"{emoji} {row['심볼']} - {row['이름']}{badge}")
+            st.caption(f"{row['카테고리']} | {row['설명'][:50]}...")
             
             # 주요 메트릭
             m1, m2, m3, m4 = st.columns(4)
@@ -748,54 +748,76 @@ def render_token_cards(df: pd.DataFrame):
             with m1:
                 st.metric(
                     "현재가",
-                    format_value(row.get("Current Price"), "price"),
-                    format_value(row.get("24h Change (%)"), "pct") if row.get("24h Change (%)") else None
+                    format_value(row.get("현재가"), "price"),
+                    format_value(row.get("24h 변동 (%)"), "pct") if row.get("24h 변동 (%)") else None
                 )
             with m2:
-                st.metric("ROI", format_value(row.get("ROI (x)"), "roi_x"))
+                st.metric("ROI", format_value(row.get("현재 ROI (x)"), "roi_x"))
             with m3:
-                st.metric("청약배수", f"{row.get('Oversubscription', 0):.1f}x")
+                st.metric("청약배수", f"{row.get('청약배수', 0):.1f}x")
             with m4:
-                st.metric("참여자", format_value(row.get("Contributors"), "number"))
+                st.metric("참여자", format_value(row.get("참여 지갑"), "number"))
             
             # 상세 정보 확장
             with st.expander("📊 상세 정보"):
                 tab1, tab2, tab3, tab4 = st.tabs(["펀드레이징", "가격 데이터", "TGE 시간대별 ROI", "세일 정보"])
                 
                 with tab1:
-                    is_permissionless = row.get("Is Permissionless", False)
+                    is_permissionless = row.get("Permissionless", False)
                     launch_type = "🔓 Permissionless" if is_permissionless else "✅ Featured (검증)"
                     st.markdown(f"""
                     | 항목 | 값 |
                     |------|-----|
                     | 런치 타입 | {launch_type} |
-                    | 커밋액 | {format_value(row.get("Committed (USD)"), "usd")} |
-                    | 실제 모금액 | {format_value(row.get("Raised (USD)"), "usd")} |
-                    | 최소 모금 목표 | {format_value(row.get("Min Raise (USD)"), "usd")} |
-                    | 청약배수 | {row.get("Oversubscription", 0):.1f}x ({row.get("Oversubscription", 0)*100:.0f}%) |
-                    | 참여자 | {format_value(row.get("Contributors"), "number")} |
+                    | 커밋액 | {format_value(row.get("커밋 (USD)"), "usd")} |
+                    | 실제 모금액 | {format_value(row.get("모금액 (USD)"), "usd")} |
+                    | 최소 모금 목표 | {format_value(row.get("최소 목표 (USD)"), "usd")} |
+                    | 청약배수 | {row.get("청약배수", 0):.1f}x ({row.get("청약배수", 0)*100:.0f}%) |
+                    | 참여자 | {format_value(row.get("참여 지갑"), "number")} |
                     | 월 Allowance | {format_value(row.get("Allowance (USD)"), "usd")} |
-                    | ICO 가격 | {format_value(row.get("ICO Price"), "price")} |
-                    | 상장가 | {format_value(row.get("Launch Price"), "price")} |
+                    | ICO 가격 | {format_value(row.get("ICO 세일가"), "price")} |
+                    | 상장가 | {format_value(row.get("상장가"), "price")} |
+                    | Launch ROI | {format_value(row.get("Launch ROI (x)"), "roi_x")} |
                     """)
                 
                 with tab2:
                     st.markdown(f"""
                     | 항목 | 값 |
                     |------|-----|
-                    | 현재가 | {format_value(row.get("Current Price"), "price")} |
+                    | 현재가 | {format_value(row.get("현재가"), "price")} |
                     | ATH | {format_value(row.get("ATH"), "price")} |
                     | ATL | {format_value(row.get("ATL"), "price")} |
-                    | 현재 ROI | {format_value(row.get("ROI (x)"), "roi_x")} |
+                    | 현재 ROI | {format_value(row.get("현재 ROI (x)"), "roi_x")} |
+                    | Launch ROI | {format_value(row.get("Launch ROI (x)"), "roi_x")} |
                     | ATH ROI | {format_value(row.get("ATH ROI (x)"), "roi_x")} |
-                    | 24h 거래량 | {format_value(row.get("24h Volume"), "usd")} |
-                    | 유동성 | {format_value(row.get("Liquidity"), "usd")} |
+                    | ATL ROI | {format_value(row.get("ATL ROI (x)"), "roi_x")} |
+                    | 24h 거래량 | {format_value(row.get("24h 거래량"), "usd")} |
+                    | 유동성 | {format_value(row.get("유동성"), "usd")} |
                     | FDV | {format_value(row.get("FDV"), "usd")} |
                     """)
                 
                 with tab3:
+                    # Launch Price 기반 ROI (5분 후 매도)
+                    launch_roi = row.get("Launch ROI (x)")
+                    launch_roi_pct = row.get("Launch ROI (%)")
+                    if launch_roi:
+                        st.markdown(f"""
+                        **🚀 상장 직후 (5분 내) 매도 시 ROI**
+                        
+                        | 시점 | 가격 | ROI (x) | ROI (%) |
+                        |------|------|---------|---------|
+                        | 상장가 (5분) | {format_value(row.get("상장가"), "price")} | {format_value(launch_roi, "roi_x")} | {format_value(launch_roi_pct, "pct")} |
+                        
+                        *상장가 = ICO 세일가로부터의 초기 가격*
+                        """)
+                    else:
+                        st.info("상장가 데이터가 없습니다.")
+                    
+                    # TGE timestamp 기반 OHLCV ROI (있는 경우)
                     if row.get("TGE Timestamp"):
                         st.markdown(f"""
+                        **📊 TGE 시간대별 ROI (OHLCV 기반)**
+                        
                         | 시점 | 가격 | ROI (x) | ROI (%) |
                         |------|------|---------|---------|
                         | +5분 | {format_value(row.get("Price @ 5m"), "price")} | {format_value(row.get("ROI_5m (x)"), "roi_x")} | {format_value(row.get("ROI_5m (%)"), "pct")} |
@@ -803,19 +825,17 @@ def render_token_cards(df: pd.DataFrame):
                         | +30분 | {format_value(row.get("Price @ 30m"), "price")} | {format_value(row.get("ROI_30m (x)"), "roi_x")} | {format_value(row.get("ROI_30m (%)"), "pct")} |
                         | +60분 | {format_value(row.get("Price @ 60m"), "price")} | {format_value(row.get("ROI_60m (x)"), "roi_x")} | {format_value(row.get("ROI_60m (%)"), "pct")} |
                         """)
-                    else:
-                        st.info("TGE 타임스탬프가 설정되지 않았습니다.")
                 
                 with tab4:
                     st.markdown(f"""
                     | 항목 | 값 |
                     |------|-----|
-                    | 세일 토큰 수 | {format_value(row.get("Sale Tokens"), "number")} |
-                    | 총 공급량 | {format_value(row.get("Total Supply"), "number")} |
-                    | 세일 비율 | {row.get("Sale % of Supply", 0):.1f}% |
-                    | ICO 날짜 | {row.get("ICO Date", "N/A")} |
-                    | 현재 세일 가치 | {format_value(row.get("Sale Value Now"), "usd")} |
-                    | 손익 | {format_value(row.get("Profit (USD)"), "usd")} ({row.get("Profit (%)", 0):+.1f}%) |
+                    | 세일 토큰 수 | {format_value(row.get("세일 토큰"), "number")} |
+                    | 총 공급량 | {format_value(row.get("총 공급량"), "number")} |
+                    | 세일 비율 | {row.get("세일 비율 (%)", 0):.1f}% |
+                    | ICO 날짜 | {row.get("ICO 날짜", "N/A")} |
+                    | 현재 세일 가치 | {format_value(row.get("세일 현재 가치"), "usd")} |
+                    | 손익 | {format_value(row.get("손익 (USD)"), "usd")} ({row.get("손익 (%)", 0):+.1f}%) |
                     """)
                 
                 # 링크
@@ -834,19 +854,29 @@ def render_roi_chart(df: pd.DataFrame):
     # 현재 ROI
     fig.add_trace(go.Bar(
         name="현재 ROI",
-        x=df["Symbol"],
-        y=df["ROI (x)"].fillna(0),
-        marker_color=df["ROI (x)"].apply(
+        x=df["심볼"],
+        y=df["현재 ROI (x)"].fillna(0),
+        marker_color=df["현재 ROI (x)"].apply(
             lambda x: "#22c55e" if x and x >= 1 else "#ef4444"
         ),
-        text=df["ROI (x)"].apply(lambda x: f"{x:.2f}x" if x else "N/A"),
+        text=df["현재 ROI (x)"].apply(lambda x: f"{x:.2f}x" if x else "N/A"),
+        textposition="outside"
+    ))
+    
+    # Launch ROI (5분)
+    fig.add_trace(go.Bar(
+        name="Launch ROI (5분)",
+        x=df["심볼"],
+        y=df["Launch ROI (x)"].fillna(0),
+        marker_color="rgba(255, 107, 107, 0.7)",
+        text=df["Launch ROI (x)"].apply(lambda x: f"{x:.2f}x" if pd.notna(x) else ""),
         textposition="outside"
     ))
     
     # ATH ROI
     fig.add_trace(go.Bar(
         name="ATH ROI",
-        x=df["Symbol"],
+        x=df["심볼"],
         y=df["ATH ROI (x)"].fillna(0),
         marker_color="rgba(250, 204, 21, 0.7)",
         text=df["ATH ROI (x)"].apply(lambda x: f"{x:.2f}x" if pd.notna(x) else ""),
@@ -866,41 +896,34 @@ def render_roi_chart(df: pd.DataFrame):
 
 
 def render_tge_roi_chart(df: pd.DataFrame):
-    """TGE 시간대별 ROI 비교 차트"""
-    st.subheader("⏱️ TGE 시간대별 가상 매도 ROI")
+    """TGE 시간대별 ROI 비교 차트 - Launch ROI 기반"""
+    st.subheader("⏱️ 상장 직후 매도 ROI (Launch ROI)")
     
-    # TGE 데이터가 있는 토큰만
-    has_tge = df[df["TGE Timestamp"].notna()]
+    # Launch ROI가 있는 토큰
+    has_launch = df[df["Launch ROI (x)"].notna()]
     
-    if len(has_tge) == 0:
-        st.info("TGE 타임스탬프가 설정된 토큰이 없습니다. METADAO_TOKENS에 tge_timestamp를 추가하세요.")
+    if len(has_launch) == 0:
+        st.info("상장가 데이터가 없습니다.")
         return
     
-    # 데이터 준비
-    time_labels = ["5분", "15분", "30분", "60분"]
-    roi_cols = ["ROI_5m (x)", "ROI_15m (x)", "ROI_30m (x)", "ROI_60m (x)"]
+    # Launch ROI 차트
+    fig = px.bar(
+        has_launch.sort_values("Launch ROI (x)", ascending=True),
+        x="Launch ROI (x)",
+        y="심볼",
+        orientation='h',
+        color="Launch ROI (x)",
+        color_continuous_scale=["#ef4444", "#facc15", "#22c55e"],
+        title="상장 직후 (5분 내) 매도 시 ROI"
+    )
     
-    fig = go.Figure()
-    
-    for _, row in has_tge.iterrows():
-        roi_values = [row.get(col) for col in roi_cols]
-        fig.add_trace(go.Bar(
-            name=row["Symbol"],
-            x=time_labels,
-            y=[v if v else 0 for v in roi_values],
-            text=[f"{v:.2f}x" if v else "N/A" for v in roi_values],
-            textposition="outside"
-        ))
-    
-    fig.add_hline(y=1, line_dash="dash", line_color="white", annotation_text="손익분기점")
+    fig.add_vline(x=1, line_dash="dash", line_color="white", annotation_text="손익분기점")
     
     fig.update_layout(
-        barmode="group",
         template="plotly_dark",
-        height=450,
-        xaxis_title="TGE 이후 시점",
-        yaxis_title="ROI (배수)",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02)
+        height=400,
+        xaxis_title="ROI (x)",
+        yaxis_title=""
     )
     
     st.plotly_chart(fig, use_container_width=True)
@@ -917,14 +940,14 @@ def render_allocation_chart(df: pd.DataFrame):
         fig = go.Figure()
         fig.add_trace(go.Bar(
             name='커밋액 (Committed)',
-            x=df["Symbol"],
-            y=df["Committed (USD)"],
+            x=df["심볼"],
+            y=df["커밋 (USD)"],
             marker_color='rgba(255, 165, 0, 0.7)'
         ))
         fig.add_trace(go.Bar(
             name='실제 모금액 (Raised)',
-            x=df["Symbol"],
-            y=df["Raised (USD)"],
+            x=df["심볼"],
+            y=df["모금액 (USD)"],
             marker_color='rgba(0, 255, 127, 0.7)'
         ))
         fig.update_layout(
@@ -939,9 +962,9 @@ def render_allocation_chart(df: pd.DataFrame):
         # 세일 비율 비교
         fig = px.bar(
             df,
-            x="Symbol",
-            y="Sale % of Supply",
-            color="ROI (x)",
+            x="심볼",
+            y="세일 비율 (%)",
+            color="현재 ROI (x)",
             color_continuous_scale=["red", "yellow", "green"],
             title="세일 물량 비율 (% of Total Supply)"
         )
@@ -958,14 +981,14 @@ def render_oversubscription_chart(df: pd.DataFrame):
     with col1:
         # 청약배수 차트
         fig = px.bar(
-            df.sort_values("Oversubscription", ascending=True),
-            x="Oversubscription",
-            y="Symbol",
+            df.sort_values("청약배수", ascending=True),
+            x="청약배수",
+            y="심볼",
             orientation='h',
-            color="Is Permissionless",
+            color="Permissionless",
             color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
             title="토큰별 청약배수 (Oversubscription)",
-            labels={"Is Permissionless": "Permissionless"}
+            labels={"Permissionless": "Permissionless"}
         )
         fig.update_layout(
             template="plotly_dark", 
@@ -983,14 +1006,14 @@ def render_oversubscription_chart(df: pd.DataFrame):
     with col2:
         # 참여자 수 차트
         fig = px.bar(
-            df.sort_values("Contributors", ascending=True),
-            x="Contributors",
-            y="Symbol",
+            df.sort_values("참여 지갑", ascending=True),
+            x="참여 지갑",
+            y="심볼",
             orientation='h',
-            color="Is Permissionless",
+            color="Permissionless",
             color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
             title="토큰별 참여자 수 (Contributors)",
-            labels={"Is Permissionless": "Permissionless"}
+            labels={"Permissionless": "Permissionless"}
         )
         fig.update_layout(
             template="plotly_dark", 
@@ -1004,19 +1027,19 @@ def render_oversubscription_chart(df: pd.DataFrame):
     st.subheader("🔗 청약배수 vs ROI 상관관계")
     
     # ROI가 있는 데이터만 필터링
-    corr_df = df[df["ROI (x)"].notna()].copy()
+    corr_df = df[df["현재 ROI (x)"].notna()].copy()
     
     if len(corr_df) > 0:
         fig = px.scatter(
             corr_df,
-            x="Oversubscription",
-            y="ROI (x)",
-            size="Contributors",
-            color="Is Permissionless",
+            x="청약배수",
+            y="현재 ROI (x)",
+            size="참여 지갑",
+            color="Permissionless",
             color_discrete_map={True: "#ff6b6b", False: "#4ecdc4"},
-            hover_data=["Symbol", "Name", "Raised (USD)"],
+            hover_data=["심볼", "이름", "모금액 (USD)"],
             title="청약배수와 현재 ROI 관계 (버블 크기 = 참여자 수)",
-            labels={"Is Permissionless": "Permissionless"}
+            labels={"Permissionless": "Permissionless"}
         )
         fig.update_layout(template="plotly_dark", height=450)
         
@@ -1040,18 +1063,18 @@ def render_profit_simulation(df: pd.DataFrame):
         
         with col1:
             # 토큰 선택
-            token_options = df["Symbol"].tolist()
+            token_options = df["심볼"].tolist()
             selected_token = st.selectbox("토큰 선택", token_options, help="분석할 토큰을 선택하세요")
             
             # 선택된 토큰 데이터
-            token_data = df[df["Symbol"] == selected_token].iloc[0]
+            token_data = df[df["심볼"] == selected_token].iloc[0]
             
             # 토큰 정보 표시
-            st.markdown(f"### {selected_token} - {token_data['Name']}")
+            st.markdown(f"### {selected_token} - {token_data['이름']}")
             
             # 할당률 계산 (Raised / Committed)
-            committed = token_data.get("Committed (USD)", 0)
-            raised = token_data.get("Raised (USD)", 0)
+            committed = token_data.get("커밋 (USD)", 0)
+            raised = token_data.get("모금액 (USD)", 0)
             if committed > 0:
                 actual_allocation_rate = (raised / committed) * 100
             else:
@@ -1061,8 +1084,8 @@ def render_profit_simulation(df: pd.DataFrame):
             **세일 당시 할당률: {actual_allocation_rate:.2f}%**
             - 총 커밋: ${committed:,.0f}
             - 실제 모금: ${raised:,.0f}
-            - 참여자: {token_data.get('Contributors', 0):,}명
-            - 청약배수: {token_data.get('Oversubscription', 0):.1f}x
+            - 참여자: {token_data.get('참여 지갑', 0):,}명
+            - 청약배수: {token_data.get('청약배수', 0):.1f}x
             """)
             
             # 투자금 입력
@@ -1079,9 +1102,9 @@ def render_profit_simulation(df: pd.DataFrame):
             st.success(f"**실제 배정: ${effective_investment:,.2f}** (나머지 ${investment - effective_investment:,.2f} 환불)")
         
         with col2:
-            ico_price = token_data.get("ICO Price", 0)
-            current_price = token_data.get("Current Price", 0)
-            launch_price = token_data.get("Launch Price")
+            ico_price = token_data.get("ICO 세일가", 0)
+            current_price = token_data.get("현재가", 0)
+            launch_price = token_data.get("상장가")
             
             if ico_price > 0 and effective_investment > 0:
                 tokens_received = effective_investment / ico_price
@@ -1181,13 +1204,13 @@ def render_profit_simulation(df: pd.DataFrame):
         with col2:
             sim_data = []
             for _, row in df.iterrows():
-                current_price = row.get("Current Price")
-                ico_price = row.get("ICO Price")
-                launch_price = row.get("Launch Price")
+                current_price = row.get("현재가")
+                ico_price = row.get("ICO 세일가")
+                launch_price = row.get("상장가")
                 
                 # 할당률 계산
-                committed = row.get("Committed (USD)", 0)
-                raised = row.get("Raised (USD)", 0)
+                committed = row.get("커밋 (USD)", 0)
+                raised = row.get("모금액 (USD)", 0)
                 if apply_allocation and committed > 0:
                     allocation_rate = raised / committed
                 else:
@@ -1207,7 +1230,7 @@ def render_profit_simulation(df: pd.DataFrame):
                         launch_roi = (launch_price / ico_price - 1) * 100
                     
                     sim_data.append({
-                        "토큰": row["Symbol"],
+                        "토큰": row["심볼"],
                         "할당률": f"{allocation_rate*100:.1f}%",
                         "실제 투자": effective_inv,
                         "받은 토큰": tokens_bought,
@@ -1300,29 +1323,29 @@ def main():
         df = get_all_token_data()
     
     # API 실패 시 데모 데이터
-    if df["Current Price"].isna().all() or df["Current Price"].sum() == 0:
+    if df["현재가"].isna().all() or df["현재가"].sum() == 0:
         st.warning("⚠️ API에서 실시간 데이터를 가져올 수 없습니다. 데모 데이터를 표시합니다.")
         demo_prices = {
             "MTNC": 0.60, "OMFG": 0.87, "UMBRA": 1.96, "AVICI": 5.43,
             "LOYAL": 0.33, "ZKLSOL": 0.08, "PAYSTREAM": 0.05, "SOLO": 1.21
         }
         for idx, row in df.iterrows():
-            symbol = row["Symbol"]
+            symbol = row["심볼"]
             if symbol in demo_prices:
-                df.at[idx, "Current Price"] = demo_prices[symbol]
-                roi_x, roi_pct = calculate_roi(demo_prices[symbol], row["ICO Price"])
-                df.at[idx, "ROI (x)"] = roi_x
-                df.at[idx, "ROI (%)"] = roi_pct
+                df.at[idx, "현재가"] = demo_prices[symbol]
+                roi_x, roi_pct = calculate_roi(demo_prices[symbol], row["ICO 세일가"])
+                df.at[idx, "현재 ROI (x)"] = roi_x
+                df.at[idx, "현재 ROI (%)"] = roi_pct
     
     # 카테고리 필터링
     if selected_category != "All":
-        df = df[df["Category"] == selected_category]
+        df = df[df["카테고리"] == selected_category]
     
     # 런치 타입 필터링
     if selected_launch_type == "Featured (검증)":
-        df = df[~df["Is Permissionless"]]
+        df = df[~df["Permissionless"]]
     elif selected_launch_type == "Permissionless":
-        df = df[df["Is Permissionless"]]
+        df = df[df["Permissionless"]]
     
     # 정렬
     df = df.sort_values(sort_col, ascending=sort_asc, na_position='last')
@@ -1343,7 +1366,7 @@ def main():
     
     with tab3:
         render_roi_chart(df)
-        render_oversubscription_chart(df)  # 추가
+        render_oversubscription_chart(df)
         render_tge_roi_chart(df)
         render_allocation_chart(df)
     
