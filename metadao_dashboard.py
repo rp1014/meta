@@ -1,5 +1,5 @@
 """
-MetaDAO ICO 토큰 분석 대시보드
+MetaDAO ICO 토큰 분석 대시보드 v3
 ==================================
 DexScreener API를 사용하여 MetaDAO 런치패드 ICO 토큰 상세 분석
 - TGE 기준 5분/15분/30분/1시간 가상 매도 수익률
@@ -48,11 +48,11 @@ METADAO_TOKENS = {
     "MTNC": {
         "name": "mtnCapital",
         "mint": "mtnc7NNSpAJuvYNmayXU63WhWZGgFzwQ2yeYWqemeta",
-        "ico_price": 0.575,  # $5.75M / 10M tokens
-        "launch_price": 0.575,
-        "committed_usd": 5750000,
-        "ico_raise_usd": 5750000,
-        "min_raise_usd": 5750000,
+        "ico_price": 0.576,  # $5,758,964 / 10M tokens
+        "launch_price": 0.576,
+        "committed_usd": 5758964,
+        "ico_raise_usd": 5758964,
+        "min_raise_usd": 0,  # 이미지 기준 $0.00
         "allowance_usd": None,
         "sale_tokens": 10000000,
         "total_supply": 25000000,
@@ -61,16 +61,16 @@ METADAO_TOKENS = {
         "contributors": 1931,
         "oversubscription": 1.0,
         "is_permissionless": False,
-        "description": "Futarchy 기반 투자 펀드 (첫 번째 MetaDAO 프로젝트)",
+        "description": "First futarchy-governed investment fund",
         "category": "Investment Fund"
     },
     "OMFG": {
         "name": "Omnipair",
         "mint": "omfgRBnxHsNJh6YeGbGAmWenNkenzsXyBXm3WDhmeta",
-        "ico_price": 0.03,  # $300K / 10M tokens
-        "launch_price": 0.03,
-        "committed_usd": 300000,
-        "ico_raise_usd": 300000,
+        "ico_price": 0.112,  # 이미지 Launch Price
+        "launch_price": 0.112,
+        "committed_usd": 1118102,
+        "ico_raise_usd": 1118102,
         "min_raise_usd": 300000,
         "allowance_usd": None,
         "sale_tokens": 10000000,
@@ -78,18 +78,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-07-28",
         "tge_timestamp": None,
         "contributors": 321,
-        "oversubscription": 1.0,
+        "oversubscription": 3.73,  # 1,118,102 / 300,000
         "is_permissionless": False,
-        "description": "탈중앙화 트레이딩 & 렌딩 프로토콜 (Oracle-less)",
+        "description": "Permissionless borrowing and leverage on Solana",
         "category": "DeFi"
     },
     "UMBRA": {
         "name": "Umbra",
         "mint": "PRVT6TB7uss3FrUd2D9xs2zqDBsa3GbMJMwCQsgmeta",
-        "ico_price": 0.075,
-        "launch_price": 0.30,  # 상장가는 ICO 가격의 4배
+        "ico_price": 0.30,  # 이미지 Launch Price (ICO 가격과 동일하게 설정)
+        "launch_price": 0.30,
         "committed_usd": 154943746,
-        "ico_raise_usd": 750000,  # 팀이 $750K만 수령
+        "ico_raise_usd": 3000000,  # 이미지 기준 $3,000,000
         "min_raise_usd": 750000,
         "allowance_usd": 34091,
         "sale_tokens": 10000000,
@@ -97,18 +97,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-06",
         "tge_timestamp": None,
         "contributors": 10519,
-        "oversubscription": 206.59,  # 20,659%
+        "oversubscription": 206.59,  # 154,943,746 / 750,000
         "is_permissionless": False,
-        "description": "Solana 프라이버시 프로토콜 (Arcium 기반)",
+        "description": "Privacy for swaps and transfers, built on Arcium",
         "category": "Privacy"
     },
     "AVICI": {
         "name": "Avici",
         "mint": "BANKJmvhT8tiJRsBSS1n2HryMBPvT5Ze4HU95DUAmeta",
-        "ico_price": 0.35,
-        "launch_price": 0.43,  # ICODrops 기준 상장가
+        "ico_price": 0.35,  # 이미지 Launch Price
+        "launch_price": 0.35,
         "committed_usd": 34230976,
-        "ico_raise_usd": 3500000,  # 팀이 $3.5M만 수령 (89.8% 환불)
+        "ico_raise_usd": 3500000,  # 이미지 기준 $3,500,000
         "min_raise_usd": 2000000,
         "allowance_usd": 100000,
         "sale_tokens": 10000000,
@@ -116,18 +116,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-14",
         "tge_timestamp": None,
         "contributors": 7352,
-        "oversubscription": 17.12,  # 1,712%
+        "oversubscription": 17.12,  # 34,230,976 / 2,000,000
         "is_permissionless": False,
-        "description": "크립토 네오뱅크 (Visa 카드, 자기수탁)",
+        "description": "Distributed Internet banking infrastructure",
         "category": "Payments"
     },
     "LOYAL": {
         "name": "Loyal",
         "mint": "LYLikzBQtpa9ZgVrJsqYGQpR3cC1WMJrBHaXGrQmeta",
-        "ico_price": 0.05,
-        "launch_price": None,
+        "ico_price": 0.25,  # 이미지 Launch Price
+        "launch_price": 0.25,
         "committed_usd": 75898233,
-        "ico_raise_usd": 2500000,  # 추정 (팀이 적정 금액만 수령)
+        "ico_raise_usd": 2500000,  # 이미지 기준 $2,500,000
         "min_raise_usd": 500000,
         "allowance_usd": 60000,
         "sale_tokens": 10000000,
@@ -135,18 +135,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-18",
         "tge_timestamp": None,
         "contributors": 5058,
-        "oversubscription": 151.80,  # 15,180%
+        "oversubscription": 151.80,  # 75,898,233 / 500,000
         "is_permissionless": True,  # Permissionless Launch
-        "description": "탈중앙화 AI 추론 프로토콜 (MagicBlock & Arcium)",
+        "description": "Solana-based private decentralized intelligence",
         "category": "AI/Privacy"
     },
     "ZKLSOL": {
         "name": "ZKLSOL",
         "mint": "ZKFHiLAfAFMTcDAuCtjNW54VzpERvoe7PBF9mYgmeta",
-        "ico_price": 0.097,  # 상장가 기준 (크롤링)
+        "ico_price": 0.097,  # 이미지 Launch Price
         "launch_price": 0.097,
         "committed_usd": 14886359,
-        "ico_raise_usd": 969420,  # 실제 모금액
+        "ico_raise_usd": 969420,  # 이미지 기준 $969,420
         "min_raise_usd": 300000,
         "allowance_usd": 50000,
         "sale_tokens": 10000000,
@@ -154,18 +154,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-19",
         "tge_timestamp": None,
         "contributors": 2290,
-        "oversubscription": 49.62,  # 4,962%
+        "oversubscription": 49.62,  # 14,886,359 / 300,000
         "is_permissionless": True,  # Permissionless Launch
-        "description": "프라이버시 + LST 스테이킹 (Zero-Knowledge)",
+        "description": "Permissionless yield generating privacy protocol",
         "category": "Privacy/LST"
     },
     "PAYSTREAM": {
         "name": "Paystream",
         "mint": "PAYZP1W3UmdEsNLJwmH61TNqACYJTvhXy8SCN4Tmeta",
-        "ico_price": 0.075,  # 상장가 기준 (크롤링)
+        "ico_price": 0.075,  # 이미지 Launch Price
         "launch_price": 0.075,
         "committed_usd": 6149247,
-        "ico_raise_usd": 750000,  # 실제 모금액
+        "ico_raise_usd": 750000,  # 이미지 기준 $750,000
         "min_raise_usd": 550000,
         "allowance_usd": 33500,
         "sale_tokens": 10000000,
@@ -173,18 +173,18 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-27",
         "tge_timestamp": None,
         "contributors": 1837,
-        "oversubscription": 11.18,  # 1,118%
+        "oversubscription": 11.18,  # 6,149,247 / 550,000
         "is_permissionless": True,  # Permissionless Launch
-        "description": "P2P 렌딩 & 유동성 최적화 프로토콜",
+        "description": "Liquidity Optimizer For Solana",
         "category": "DeFi/Lending"
     },
     "SOLO": {
         "name": "Solomon",
         "mint": "SoLo9oxzLDpcq1dpqAgMwgce5WqkRDtNXK7EPnbmeta",
-        "ico_price": 0.80,  # 크롤링 기준 Launch Price
+        "ico_price": 0.80,  # 이미지 Launch Price
         "launch_price": 0.80,
-        "committed_usd": 102932673,  # $102.9M 커밋
-        "ico_raise_usd": 8000000,  # 실제 $8M 모금
+        "committed_usd": 102932673,
+        "ico_raise_usd": 8000000,  # 이미지 기준 $8,000,000
         "min_raise_usd": 2000000,
         "allowance_usd": 100000,
         "sale_tokens": 10000000,
@@ -192,9 +192,9 @@ METADAO_TOKENS = {
         "ico_date": "2025-11-18",
         "tge_timestamp": None,
         "contributors": 6604,
-        "oversubscription": 51.47,  # 5,147%
+        "oversubscription": 51.47,  # 102,932,673 / 2,000,000
         "is_permissionless": False,
-        "description": "수익형 스테이블코인 (USDv/sUSDv, 베이시스 트레이드)",
+        "description": "The composable dollar that always earns",
         "category": "Stablecoin/Yield"
     }
 }
@@ -616,15 +616,15 @@ def render_overview(df: pd.DataFrame):
         st.metric("수익 토큰", f"{profitable}/{total}")
     
     with col5:
-        total_contributors = df["Contributors"].sum()
-        st.metric("총 참여자", f"{total_contributors:,.0f}")
+        avg_oversubscription = df["Oversubscription"].mean()
+        st.metric("평균 청약배수", f"{avg_oversubscription:.1f}x")
     
     # 두 번째 행
     col6, col7, col8, col9, col10 = st.columns(5)
     
     with col6:
-        avg_oversubscription = df["Oversubscription"].mean()
-        st.metric("평균 청약배수", f"{avg_oversubscription:.1f}x")
+        max_oversubscription = df.loc[df["Oversubscription"].idxmax()]
+        st.metric("최고 청약배수", f"{max_oversubscription['Symbol']} ({max_oversubscription['Oversubscription']:.0f}x)")
     
     with col7:
         total_volume = df["24h Volume"].sum()
@@ -640,8 +640,10 @@ def render_overview(df: pd.DataFrame):
         st.metric("Featured / Permissionless", f"{featured} / {permissionless}")
     
     with col10:
-        max_oversubscription = df.loc[df["Oversubscription"].idxmax()]
-        st.metric("최고 청약배수", f"{max_oversubscription['Symbol']} ({max_oversubscription['Oversubscription']:.0f}x)")
+        # ATH ROI 최고 토큰
+        if df["ATH ROI (x)"].notna().any():
+            max_ath_roi = df.loc[df["ATH ROI (x)"].idxmax()]
+            st.metric("최고 ATH ROI", f"{max_ath_roi['Symbol']} ({max_ath_roi['ATH ROI (x)']:.1f}x)")
 
 
 def format_value(val, fmt_type: str = "number") -> str:
@@ -666,14 +668,13 @@ def render_summary_table(df: pd.DataFrame):
     """요약 테이블"""
     st.header("📋 한눈에 보기")
     
-    # 표시할 컬럼
+    # 표시할 컬럼 - Launch ROI 추가 (5분 후 매도 시 ROI)
     display_cols = [
         "Symbol", "Name", "Is Permissionless",
-        "Committed (USD)", "Raised (USD)", "Contributors", "Oversubscription",
-        "ICO Price", "Current Price", 
-        "ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
-        "ROI_5m (x)", "ROI_15m (x)", "ROI_30m (x)", "ROI_60m (x)",
-        "24h Change (%)", "Liquidity", "Sale % of Supply"
+        "Oversubscription", "Contributors",
+        "ICO Price", "Launch Price", "Current Price", 
+        "Launch ROI (x)", "ROI (x)", "ATH ROI (x)",
+        "24h Change (%)", "Liquidity"
     ]
     
     # 존재하는 컬럼만 선택
@@ -698,17 +699,16 @@ def render_summary_table(df: pd.DataFrame):
     # 숫자 포맷
     format_dict = {
         "ICO Price": "${:.4f}",
+        "Launch Price": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
         "Current Price": "${:.4f}",
+        "Launch ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ROI (x)": "{:.2f}x",
         "ATH ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ATL ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "ROI_5m (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "ROI_15m (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "ROI_30m (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
-        "ROI_60m (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "24h Change (%)": "{:+.2f}%",
         "Liquidity": "${:,.0f}",
-        "Sale % of Supply": "{:.1f}%"
+        "Oversubscription": "{:.1f}x",
+        "Contributors": "{:,.0f}"
     }
     
     styled = styled.format(format_dict, na_rep="N/A")
@@ -1028,99 +1028,245 @@ def render_oversubscription_chart(df: pd.DataFrame):
 
 
 def render_profit_simulation(df: pd.DataFrame):
-    """투자 시뮬레이션 (직접 입력)"""
+    """투자 시뮬레이션 (토큰 선택 + 실제 할당률)"""
     st.header("💵 투자 시뮬레이션")
     
-    st.markdown("ICO 참여 금액을 입력하면 각 토큰별 현재 가치와 수익을 계산합니다.")
+    # 두 가지 모드
+    mode = st.radio("시뮬레이션 모드", ["개별 토큰 분석", "전체 토큰 비교"], horizontal=True)
     
-    col1, col2 = st.columns([1, 3])
-    
-    with col1:
-        # 금액 직접 입력
-        investment = st.number_input(
-            "투자금액 (USD)",
-            min_value=10,
-            max_value=1000000,
-            value=1000,
-            step=100,
-            help="ICO 참여 금액을 입력하세요"
-        )
+    if mode == "개별 토큰 분석":
+        st.markdown("---")
+        col1, col2 = st.columns([1, 2])
         
-        # 할당률 표시 옵션
-        show_allocation = st.checkbox("실제 할당 비율 적용", value=False, 
-                                       help="과열 ICO의 경우 실제 할당률이 낮을 수 있습니다")
-        
-        if show_allocation:
-            allocation_rate = st.slider("예상 할당률 (%)", 1, 100, 10)
-            effective_investment = investment * (allocation_rate / 100)
-            st.info(f"실제 배정 금액: ${effective_investment:,.0f}")
-        else:
-            effective_investment = investment
-    
-    with col2:
-        sim_data = []
-        for _, row in df.iterrows():
-            current_price = row.get("Current Price")
-            ico_price = row.get("ICO Price")
+        with col1:
+            # 토큰 선택
+            token_options = df["Symbol"].tolist()
+            selected_token = st.selectbox("토큰 선택", token_options, help="분석할 토큰을 선택하세요")
             
-            if current_price and ico_price and ico_price > 0:
-                tokens_bought = effective_investment / ico_price
-                current_value = tokens_bought * current_price
-                profit = current_value - effective_investment
-                roi_pct = (profit / effective_investment * 100) if effective_investment > 0 else 0
-                
-                sim_data.append({
-                    "토큰": row["Symbol"],
-                    "ICO 가격": ico_price,
-                    "현재 가격": current_price,
-                    "배정 토큰": tokens_bought,
-                    "현재 가치": current_value,
-                    "손익": profit,
-                    "수익률 (%)": roi_pct
-                })
-        
-        if sim_data:
-            sim_df = pd.DataFrame(sim_data)
+            # 선택된 토큰 데이터
+            token_data = df[df["Symbol"] == selected_token].iloc[0]
             
-            # 바 차트
-            fig = px.bar(
-                sim_df,
-                x="토큰",
-                y="손익",
-                color="손익",
-                color_continuous_scale=["#ef4444", "#facc15", "#22c55e"],
-                title=f"${effective_investment:,.0f} 투자 시 토큰별 손익"
-            )
-            fig.update_layout(template="plotly_dark", height=350)
-            st.plotly_chart(fig, use_container_width=True)
+            # 토큰 정보 표시
+            st.markdown(f"### {selected_token} - {token_data['Name']}")
             
-            # 테이블
-            st.dataframe(
-                sim_df.style.format({
-                    "ICO 가격": "${:.4f}",
-                    "현재 가격": "${:.4f}",
-                    "배정 토큰": "{:,.2f}",
-                    "현재 가치": "${:,.2f}",
-                    "손익": "${:+,.2f}",
-                    "수익률 (%)": "{:+.1f}%"
-                }).applymap(
-                    lambda x: "color: #22c55e" if isinstance(x, (int, float)) and x > 0 else "color: #ef4444",
-                    subset=["손익", "수익률 (%)"]
-                ),
-                use_container_width=True
-            )
+            # 할당률 계산 (Raised / Committed)
+            committed = token_data.get("Committed (USD)", 0)
+            raised = token_data.get("Raised (USD)", 0)
+            if committed > 0:
+                actual_allocation_rate = (raised / committed) * 100
+            else:
+                actual_allocation_rate = 100
             
-            # 총합
-            total_profit = sim_df["손익"].sum()
-            total_invested = effective_investment * len(sim_df)
-            total_value = sim_df["현재 가치"].sum()
-            
-            st.markdown(f"""
-            **전체 토큰 동일 금액 투자 시:**
-            - 총 투자금: ${total_invested:,.0f}
-            - 현재 총 가치: ${total_value:,.0f}  
-            - 총 손익: **${total_profit:+,.0f}** ({total_profit/total_invested*100:+.1f}%)
+            st.info(f"""
+            **세일 당시 할당률: {actual_allocation_rate:.2f}%**
+            - 총 커밋: ${committed:,.0f}
+            - 실제 모금: ${raised:,.0f}
+            - 참여자: {token_data.get('Contributors', 0):,}명
+            - 청약배수: {token_data.get('Oversubscription', 0):.1f}x
             """)
+            
+            # 투자금 입력
+            investment = st.number_input(
+                "참여 금액 (USD)",
+                min_value=10,
+                max_value=1000000,
+                value=1000,
+                step=100
+            )
+            
+            # 실제 배정 금액
+            effective_investment = investment * (actual_allocation_rate / 100)
+            st.success(f"**실제 배정: ${effective_investment:,.2f}** (나머지 ${investment - effective_investment:,.2f} 환불)")
+        
+        with col2:
+            ico_price = token_data.get("ICO Price", 0)
+            current_price = token_data.get("Current Price", 0)
+            launch_price = token_data.get("Launch Price")
+            
+            if ico_price > 0 and effective_investment > 0:
+                tokens_received = effective_investment / ico_price
+                
+                st.markdown("### 📊 수익 분석")
+                
+                # 가격별 ROI 테이블
+                price_data = []
+                
+                # 현재가 기준
+                if current_price:
+                    current_value = tokens_received * current_price
+                    current_profit = current_value - effective_investment
+                    current_roi = (current_price / ico_price - 1) * 100
+                    price_data.append({
+                        "시점": "🔵 현재",
+                        "가격": f"${current_price:.4f}",
+                        "가치": f"${current_value:,.2f}",
+                        "손익": f"${current_profit:+,.2f}",
+                        "ROI": f"{current_roi:+.1f}%"
+                    })
+                
+                # 상장가 기준 (5분 후 매도 가정)
+                if launch_price:
+                    launch_value = tokens_received * launch_price
+                    launch_profit = launch_value - effective_investment
+                    launch_roi = (launch_price / ico_price - 1) * 100
+                    price_data.append({
+                        "시점": "⚡ 상장가 (5분)",
+                        "가격": f"${launch_price:.4f}",
+                        "가치": f"${launch_value:,.2f}",
+                        "손익": f"${launch_profit:+,.2f}",
+                        "ROI": f"{launch_roi:+.1f}%"
+                    })
+                
+                # ATH 기준
+                ath = token_data.get("ATH")
+                if ath:
+                    ath_value = tokens_received * ath
+                    ath_profit = ath_value - effective_investment
+                    ath_roi = (ath / ico_price - 1) * 100
+                    price_data.append({
+                        "시점": "🚀 ATH",
+                        "가격": f"${ath:.4f}",
+                        "가치": f"${ath_value:,.2f}",
+                        "손익": f"${ath_profit:+,.2f}",
+                        "ROI": f"{ath_roi:+.1f}%"
+                    })
+                
+                # ATL 기준
+                atl = token_data.get("ATL")
+                if atl:
+                    atl_value = tokens_received * atl
+                    atl_profit = atl_value - effective_investment
+                    atl_roi = (atl / ico_price - 1) * 100
+                    price_data.append({
+                        "시점": "📉 ATL",
+                        "가격": f"${atl:.4f}",
+                        "가치": f"${atl_value:,.2f}",
+                        "손익": f"${atl_profit:+,.2f}",
+                        "ROI": f"{atl_roi:+.1f}%"
+                    })
+                
+                if price_data:
+                    price_df = pd.DataFrame(price_data)
+                    st.dataframe(price_df, use_container_width=True, hide_index=True)
+                
+                # 요약 메트릭
+                m1, m2, m3 = st.columns(3)
+                with m1:
+                    st.metric("받은 토큰", f"{tokens_received:,.2f} {selected_token}")
+                with m2:
+                    if current_price:
+                        st.metric("현재 가치", f"${current_value:,.2f}", f"{current_roi:+.1f}%")
+                with m3:
+                    if launch_price:
+                        st.metric("5분 매도 시", f"${launch_value:,.2f}", f"{launch_roi:+.1f}%")
+    
+    else:
+        # 전체 토큰 비교 모드 (기존 로직)
+        st.markdown("---")
+        col1, col2 = st.columns([1, 3])
+        
+        with col1:
+            investment = st.number_input(
+                "투자금액 (USD)",
+                min_value=10,
+                max_value=1000000,
+                value=1000,
+                step=100,
+                help="각 ICO에 참여한 금액"
+            )
+            
+            apply_allocation = st.checkbox("실제 할당률 적용", value=True,
+                                           help="청약배수에 따른 실제 할당 비율 적용")
+        
+        with col2:
+            sim_data = []
+            for _, row in df.iterrows():
+                current_price = row.get("Current Price")
+                ico_price = row.get("ICO Price")
+                launch_price = row.get("Launch Price")
+                
+                # 할당률 계산
+                committed = row.get("Committed (USD)", 0)
+                raised = row.get("Raised (USD)", 0)
+                if apply_allocation and committed > 0:
+                    allocation_rate = raised / committed
+                else:
+                    allocation_rate = 1.0
+                
+                effective_inv = investment * allocation_rate
+                
+                if current_price and ico_price and ico_price > 0:
+                    tokens_bought = effective_inv / ico_price
+                    current_value = tokens_bought * current_price
+                    profit = current_value - effective_inv
+                    roi_pct = (current_price / ico_price - 1) * 100
+                    
+                    # 5분 (상장가) ROI
+                    launch_roi = None
+                    if launch_price:
+                        launch_roi = (launch_price / ico_price - 1) * 100
+                    
+                    sim_data.append({
+                        "토큰": row["Symbol"],
+                        "할당률": f"{allocation_rate*100:.1f}%",
+                        "실제 투자": effective_inv,
+                        "받은 토큰": tokens_bought,
+                        "현재 가치": current_value,
+                        "손익": profit,
+                        "현재 ROI": roi_pct,
+                        "5분 ROI": launch_roi
+                    })
+            
+            if sim_data:
+                sim_df = pd.DataFrame(sim_data)
+                
+                # 바 차트 - 현재 ROI vs 5분 ROI 비교
+                fig = go.Figure()
+                fig.add_trace(go.Bar(
+                    name='현재 ROI (%)',
+                    x=sim_df["토큰"],
+                    y=sim_df["현재 ROI"],
+                    marker_color='#4ecdc4'
+                ))
+                fig.add_trace(go.Bar(
+                    name='5분 ROI (%)',
+                    x=sim_df["토큰"],
+                    y=sim_df["5분 ROI"].fillna(0),
+                    marker_color='#ff6b6b'
+                ))
+                fig.update_layout(
+                    title=f"${investment:,.0f} 투자 시 ROI 비교 (현재 vs 상장 5분)",
+                    template="plotly_dark",
+                    height=350,
+                    barmode='group'
+                )
+                fig.add_hline(y=0, line_dash="dash", line_color="white")
+                st.plotly_chart(fig, use_container_width=True)
+                
+                # 테이블
+                st.dataframe(
+                    sim_df.style.format({
+                        "실제 투자": "${:,.2f}",
+                        "받은 토큰": "{:,.2f}",
+                        "현재 가치": "${:,.2f}",
+                        "손익": "${:+,.2f}",
+                        "현재 ROI": "{:+.1f}%",
+                        "5분 ROI": lambda x: f"{x:+.1f}%" if pd.notna(x) else "N/A"
+                    }),
+                    use_container_width=True
+                )
+                
+                # 총합
+                total_invested = sim_df["실제 투자"].sum()
+                total_value = sim_df["현재 가치"].sum()
+                total_profit = sim_df["손익"].sum()
+                
+                st.markdown(f"""
+                **전체 토큰 포트폴리오 (할당률 적용):**
+                - 총 실제 투자: ${total_invested:,.0f}
+                - 현재 총 가치: ${total_value:,.0f}  
+                - 총 손익: **${total_profit:+,.0f}** ({total_profit/total_invested*100:+.1f}%)
+                """)
 
 
 def render_raw_data(df: pd.DataFrame):
