@@ -544,18 +544,19 @@ def render_sidebar() -> Tuple[str, str, Tuple[str, bool]]:
         launch_types = ["All", "Featured (검증)", "Permissionless"]
         selected_launch_type = st.selectbox("런치 타입", launch_types, help="Featured: MetaDAO 팀 검증, Permissionless: 자유 런칭")
         
-        # 정렬 옵션
+        # 정렬 옵션 (한글 컬럼명)
         sort_options = {
-            "ROI (높은순)": ("ROI (x)", False),
-            "ROI (낮은순)": ("ROI (x)", True),
-            "청약배수 (높은순)": ("Oversubscription", False),
-            "참여자 (많은순)": ("Contributors", False),
-            "ICO 날짜 (최신순)": ("ICO Date", False),
-            "ICO 날짜 (오래된순)": ("ICO Date", True),
-            "유동성 (높은순)": ("Liquidity", False),
-            "거래량 (높은순)": ("24h Volume", False),
-            "모금액 (높은순)": ("Raised (USD)", False),
-            "커밋액 (높은순)": ("Committed (USD)", False)
+            "ROI (높은순)": ("현재 ROI (x)", False),
+            "ROI (낮은순)": ("현재 ROI (x)", True),
+            "Launch ROI (높은순)": ("Launch ROI (x)", False),
+            "청약배수 (높은순)": ("청약배수", False),
+            "참여자 (많은순)": ("참여 지갑", False),
+            "ICO 날짜 (최신순)": ("ICO 날짜", False),
+            "ICO 날짜 (오래된순)": ("ICO 날짜", True),
+            "유동성 (높은순)": ("유동성", False),
+            "거래량 (높은순)": ("24h 거래량", False),
+            "모금액 (높은순)": ("모금액 (USD)", False),
+            "커밋액 (높은순)": ("커밋 (USD)", False)
         }
         sort_by = st.selectbox("정렬 기준", list(sort_options.keys()))
         
@@ -577,9 +578,8 @@ def render_sidebar() -> Tuple[str, str, Tuple[str, bool]]:
         - **Featured**: MetaDAO 검증 프로젝트
         - **Permissionless**: 누구나 런칭 가능
         
-        ### 📝 TGE 시간대별 ROI
-        토큰 메타데이터에 `tge_timestamp`를  
-        입력하면 자동 계산됩니다.
+        ### 📝 Launch ROI
+        상장가 / ICO가 = 5분 후 매도 ROI
         
         ### ⚠️ 주의
         - 실시간 데이터 지연 가능
