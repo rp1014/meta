@@ -1693,10 +1693,11 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666; font-size: 0.85em;'>
-    Built by <a href='https://x.com/alfy' target='_blank' style='color: #E91E8C; text-decoration: none;'>@alfy</a>
+    Built by <a href='https://x.com/maharishi1014' target='_blank' style='color: #E91E8C; text-decoration: none;'>@maharishi1014</a>
     </div>
     """, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
     main()
+
