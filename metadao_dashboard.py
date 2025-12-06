@@ -835,8 +835,8 @@ def render_sidebar() -> Tuple[str, str, Tuple[str, bool]]:
         
         st.markdown("""
         ### 🏷️ 런치 타입
-        - **Featured**: MetaDAO 검증 프로젝트
-        - **Permissionless**: 누구나 런칭 가능
+        - ✅ **Featured**: MetaDAO 검증 프로젝트
+        - 🔓 **Permissionless**: 누구나 런칭 가능
         """)
         
         return selected_category, selected_launch_type, sort_options[sort_by]
@@ -1672,7 +1672,7 @@ def main():
     st.markdown("---")
     st.markdown("""
     <div style='text-align: center; color: #666; font-size: 0.85em;'>
-    Built by <a href='https://x.com/alfy' target='_blank' style='color: #E91E8C; text-decoration: none;'>@alfy</a>
+    Built by Tel <a href='https://t.me/Alfy1014' target='_blank' style='color: #E91E8C; text-decoration: none;'>@Alfy1014</a>
     </div>
     """, unsafe_allow_html=True)
 
