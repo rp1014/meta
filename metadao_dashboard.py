@@ -324,7 +324,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-04-09",
         "tge_timestamp": None,
         "contributors": 1931,
-        "oversubscription": 1.0,
+        "oversubscription": 1.0,  # 커밋액 = 모금액
         "is_permissionless": False,
         "description": "First futarchy-governed investment fund",
         "category": "Investment Fund"
@@ -343,7 +343,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-07-28",
         "tge_timestamp": None,
         "contributors": 321,
-        "oversubscription": 3.73,  # 1,118,102 / 300,000
+        "oversubscription": 1.0,  # 커밋액 = 모금액 (1,118,102 / 1,118,102)
         "is_permissionless": False,
         "description": "Permissionless borrowing and leverage on Solana",
         "category": "DeFi"
@@ -362,7 +362,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-06",
         "tge_timestamp": None,
         "contributors": 10519,
-        "oversubscription": 206.59,  # 154,943,746 / 750,000
+        "oversubscription": 51.65,  # 154,943,746 / 3,000,000
         "is_permissionless": False,
         "description": "Privacy for swaps and transfers, built on Arcium",
         "category": "Privacy"
@@ -381,7 +381,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-14",
         "tge_timestamp": None,
         "contributors": 7352,
-        "oversubscription": 17.12,  # 34,230,976 / 2,000,000
+        "oversubscription": 9.78,  # 34,230,976 / 3,500,000
         "is_permissionless": False,
         "description": "Distributed Internet banking infrastructure",
         "category": "Payments"
@@ -400,7 +400,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-18",
         "tge_timestamp": None,
         "contributors": 5058,
-        "oversubscription": 151.80,  # 75,898,233 / 500,000
+        "oversubscription": 30.36,  # 75,898,233 / 2,500,000
         "is_permissionless": True,  # Permissionless Launch
         "description": "Solana-based private decentralized intelligence",
         "category": "AI/Privacy"
@@ -419,7 +419,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-19",
         "tge_timestamp": None,
         "contributors": 2290,
-        "oversubscription": 49.62,  # 14,886,359 / 300,000
+        "oversubscription": 15.36,  # 14,886,359 / 969,420
         "is_permissionless": True,  # Permissionless Launch
         "description": "Permissionless yield generating privacy protocol",
         "category": "Privacy/LST"
@@ -438,7 +438,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-10-27",
         "tge_timestamp": None,
         "contributors": 1837,
-        "oversubscription": 11.18,  # 6,149,247 / 550,000
+        "oversubscription": 8.20,  # 6,149,247 / 750,000
         "is_permissionless": True,  # Permissionless Launch
         "description": "Liquidity Optimizer For Solana",
         "category": "DeFi/Lending"
@@ -457,7 +457,7 @@ METADAO_TOKENS = {
         "ico_date": "2025-11-18",
         "tge_timestamp": None,
         "contributors": 6604,
-        "oversubscription": 51.47,  # 102,932,673 / 2,000,000
+        "oversubscription": 12.87,  # 102,932,673 / 8,000,000
         "is_permissionless": False,
         "description": "The composable dollar that always earns",
         "category": "Stablecoin/Yield"
@@ -724,7 +724,7 @@ def get_all_token_data() -> pd.DataFrame:
             "ICO 세일가": ico_price,
             "상장가": launch_price,
             "커밋 (USD)": committed_usd,
-            "모금액 (USD)": ico_raise,
+            "하드캡 (USD)": ico_raise,
             "최소 목표 (USD)": min_raise_usd,
             "Allowance (USD)": allowance_usd,
             "참여 지갑": contributors,
@@ -820,7 +820,7 @@ def render_sidebar() -> Tuple[str, str, Tuple[str, bool]]:
             "ICO 날짜 (오래된순)": ("ICO 날짜", True),
             "유동성 (높은순)": ("유동성", False),
             "거래량 (높은순)": ("24h 거래량", False),
-            "모금액 (높은순)": ("모금액 (USD)", False),
+            "하드캡 (높은순)": ("하드캡 (USD)", False),
             "커밋액 (높은순)": ("커밋 (USD)", False)
         }
         sort_by = st.selectbox("정렬 기준", list(sort_options.keys()))
@@ -854,8 +854,8 @@ def render_overview(df: pd.DataFrame):
         st.metric("총 커밋액", f"${total_committed:,.0f}")
     
     with col2:
-        total_raised = df["모금액 (USD)"].sum()
-        st.metric("총 모금액", f"${total_raised:,.0f}")
+        total_raised = df["하드캡 (USD)"].sum()
+        st.metric("총 하드캡", f"${total_raised:,.0f}")
     
     with col3:
         valid_roi = df[df["현재 ROI (x)"].notna()]["현재 ROI (x)"]
@@ -938,18 +938,22 @@ def render_summary_table(df: pd.DataFrame):
     """요약 테이블"""
     st.header("📋 한눈에 보기")
     
-    # 컬럼 순서: 심볼, 이름, ICO날짜, 모금액, 커밋USD, 청약배수, 참여지갑, ICO세일가, 현재가, 현재ROI, ATH ROI, ATL ROI, Liquidity, 카테고리
+    # 타입 컬럼 추가 (Permissionless 표시)
+    display_df = df.copy()
+    display_df["타입"] = display_df["Permissionless"].apply(lambda x: "🔓" if x else "✅")
+    
+    # 컬럼 순서: 타입, 심볼, 이름, ICO날짜, 최소목표, 하드캡, 커밋, 청약배수, 참여지갑, ICO세일가, 현재가, 현재ROI, ATH ROI, ATL ROI, Liquidity, 카테고리
     display_cols = [
-        "심볼", "이름", "ICO 날짜", 
-        "모금액 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
+        "타입", "심볼", "이름", "ICO 날짜", 
+        "최소 목표 (USD)", "하드캡 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
         "ICO 세일가", "현재가", 
         "현재 ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
         "유동성", "카테고리"
     ]
     
     # 존재하는 컬럼만 선택
-    available_cols = [col for col in display_cols if col in df.columns]
-    display_df = df[available_cols].copy()
+    available_cols = [col for col in display_cols if col in display_df.columns]
+    display_df = display_df[available_cols].copy()
     
     # ROI 컬럼에 통일된 스타일 적용
     roi_cols = [col for col in available_cols if "ROI" in col and "(x)" in col]
@@ -973,7 +977,8 @@ def render_summary_table(df: pd.DataFrame):
         "ATH ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "ATL ROI (x)": lambda x: f"{x:.2f}x" if pd.notna(x) else "N/A",
         "커밋 (USD)": fmt_short_usd,
-        "모금액 (USD)": fmt_short_usd,
+        "하드캡 (USD)": fmt_short_usd,
+        "최소 목표 (USD)": fmt_short_usd,
         "유동성": fmt_short_usd,
         "청약배수": "{:.1f}x",
         "참여 지갑": fmt_short_num
@@ -1038,7 +1043,7 @@ def render_token_cards(df: pd.DataFrame):
                     |------|-----|
                     | 런치 타입 | {launch_type} |
                     | 커밋액 | {format_value(row.get("커밋 (USD)"), "usd")} |
-                    | 실제 모금액 | {format_value(row.get("모금액 (USD)"), "usd")} |
+                    | 하드캡 | {format_value(row.get("하드캡 (USD)"), "usd")} |
                     | 최소 모금 목표 | {format_value(row.get("최소 목표 (USD)"), "usd")} |
                     | 청약배수 | {row.get("청약배수", 0):.1f}x ({row.get("청약배수", 0)*100:.0f}%) |
                     | 참여자 | {format_value(row.get("참여 지갑"), "number")} |
@@ -1202,7 +1207,7 @@ def render_allocation_chart(df: pd.DataFrame):
     col1, col2 = st.columns(2)
     
     with col1:
-        # 커밋액 vs 실제 모금액 비교
+        # 커밋액 vs 하드캡 비교
         fig = go.Figure()
         fig.add_trace(go.Bar(
             name='커밋액 (Committed)',
@@ -1211,13 +1216,13 @@ def render_allocation_chart(df: pd.DataFrame):
             marker_color=COLORS["chart_ath_roi"]  # 노란색
         ))
         fig.add_trace(go.Bar(
-            name='실제 모금액 (Raised)',
+            name='하드캡 (Raised)',
             x=df["심볼"],
-            y=df["모금액 (USD)"],
+            y=df["하드캡 (USD)"],
             marker_color=COLORS["positive"]  # 초록색
         ))
         fig.update_layout(
-            title="커밋액 vs 실제 모금액",
+            title="커밋액 vs 하드캡",
             barmode='group'
         )
         fig = apply_dark_layout(fig, height=350)
@@ -1336,7 +1341,7 @@ def render_profit_simulation(df: pd.DataFrame):
             
             # 할당률 계산 (Raised / Committed)
             committed = token_data.get("커밋 (USD)", 0)
-            raised = token_data.get("모금액 (USD)", 0)
+            raised = token_data.get("하드캡 (USD)", 0)
             if committed > 0:
                 actual_allocation_rate = (raised / committed) * 100
             else:
@@ -1456,7 +1461,7 @@ def render_profit_simulation(df: pd.DataFrame):
                 
                 # 할당률 계산
                 committed = row.get("커밋 (USD)", 0)
-                raised = row.get("모금액 (USD)", 0)
+                raised = row.get("하드캡 (USD)", 0)
                 if apply_allocation and committed > 0:
                     allocation_rate = raised / committed
                 else:
@@ -1534,7 +1539,7 @@ def render_raw_data(df: pd.DataFrame):
     main_cols = [
         "심볼", "이름", "카테고리", "ICO 날짜",
         "ICO 세일가", "현재가", "ATH", "ATL",
-        "모금액 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
+        "하드캡 (USD)", "커밋 (USD)", "청약배수", "참여 지갑",
         "현재 ROI (x)", "ATH ROI (x)", "ATL ROI (x)",
         "유동성", "시가총액", "FDV", "24h 거래량",
         "세일 토큰", "총 공급량", "세일 비율 (%)"
@@ -1560,7 +1565,7 @@ def render_raw_data(df: pd.DataFrame):
         "현재가": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
         "ATH": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
         "ATL": lambda x: f"${x:.4f}" if pd.notna(x) else "N/A",
-        "모금액 (USD)": fmt_short_usd,
+        "하드캡 (USD)": fmt_short_usd,
         "커밋 (USD)": fmt_short_usd,
         "유동성": fmt_short_usd,
         "시가총액": fmt_short_usd,
